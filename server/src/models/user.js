@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const validator = require("validator");
+
 
 const userSchema = new mongoose.Schema(
   {
@@ -21,15 +23,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
-      trim: true,
-      validate(value) {
-        if (!["Male", "Female", "thers"].includes(value)) {
-          throw new error(
-            "Gender is not valid. It should be among male, female and others"
-          );
+      validator(value){
+        if(!validator.isEmail(value)){
+          throw new Error(`Invalid Email: ${value} Address.` ) 
         }
       },
+      lowercase: true,
+      trim: true,
     },
     password: {
       type: String,
@@ -46,6 +46,13 @@ const userSchema = new mongoose.Schema(
     gender: {
       type: String,
       required: true,
+      validate(value) {
+        if (!["Male", "Female", "thers"].includes(value)) {
+          throw new error(
+            "Gender is not valid. It should be among male, female and others"
+          );
+        }
+      },
       trim: true,
       minLength: 4,
       maxLength: 5,

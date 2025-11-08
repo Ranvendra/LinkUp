@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, User, Lock } from "lucide-react";
-import google from "../../assets/google.webp";
+import google from "/google.webp";
 
 function AuthForms() {
   const [isLogin, setIsLogin] = useState(false);

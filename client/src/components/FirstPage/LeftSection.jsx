@@ -1,5 +1,5 @@
 import React from 'react';
-import icon from '../../assets/icon.webp'
+import icon from '/icon.webp'
 import AuthForms from './AuthForm';
 // import ui from '../../assets/ui.png';
 

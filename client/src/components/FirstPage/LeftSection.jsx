@@ -20,12 +20,12 @@ function LeftSection() {
         </div>
       </header>
 
-      <div className='mt-10 flex items-center justify-center text-8xl pb-10 font-pacifico bg-linear-to-r from-red-500 to-orange-400 text-transparent bg-clip-text'>
+      <div className='mt-10 flex items-center justify-center text-8xl pb-10 font-pacifico bg-linear-to-r from-red-500 to-orange-400 text-transparent bg-clip-text' data-aos="fade-right">
         Bond Begins
       </div>
 
       {/* Auth Form Section - Improved spacing and responsiveness */}
-      <div className="flex-1 mt-10 flex justify-center xl:justify-start px-4 sm:px-6 lg:px-8 xl:ml-0 xl:pr-40 ">
+      <div className="flex-1 mt-10 flex justify-center xl:justify-start px-4 sm:px-6 lg:px-8 xl:ml-0 xl:pr-40">
 
           <AuthForms />
           {/* <img className='h-120 w-200 flex items-center justify-center xl:ml-20'

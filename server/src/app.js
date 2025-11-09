@@ -1,56 +1,72 @@
-require('dotenv').config();
+require("dotenv").config();
 
 const express = require("express");
 const app = express();
 const connectDB = require("./config/database");
-const User = require("./models/user")
+const User = require("./models/user");
+const bcrypt = require("bcrypt");
+const middleware = require("./utils/validation");
 
 const PORT = process.env.PORT || 3000;
+app.use(express.json());
 
-app.use(express.json())
+app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
+// await User.syncIndexes();
 
-app.post("/signup", async (req, res) => {
+  const { name, dateOfBirth, email, password } = req.body;
+  // hashing
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
 
   // creating new instance of the model "User"
-
-  const data = new User(req.body);
-  console.log(req.body)
+  const data = new User({
+    name,
+    dateOfBirth,
+    email: email,
+    password: hashedPassword,
+  });
 
   try {
     await data.save();
-    res.send("User Added Successfully.")
+    res.status(200).json({
+      Message: "User Added Successfully.",
+      user: {
+        name: name,
+        email: email,
+        dateOfBirth: dateOfBirth,
+        password: password,
+      },
+    });
+  } catch (err) {
+    res.status(400).send(`Something Went Wrong:${err.message}`);
   }
-  catch (err) {
-    res.status(400).send(`Something Went Wrong:${err.message}`)
-  }
-})
+});
 
-app.get("/test", async(req, res)=> {
-
+// Testing purpose for server running.
+app.get("/test", async (req, res) => {
   try {
-    res.json({"Message": "Hello!, Welcome to the world of Backend."})
+    res.json({ Message: "Hello!, Welcome to the world of Backend." });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err){
-    res.status(500).json({"message": err.message})
-  }
-})
+});
 
-app.get("/", async(req, res)=> {
-
+app.get("/", async (req, res) => {
   try {
-    res.json({"Note": "It's Ranvendra Pratap Singh's Server. You are noticed to stay away from this"})
+    res.json({
+      Note: "It's Ranvendra Pratap Singh's Server. You are noticed to stay away from this",
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-  catch(err){
-    res.status(500).json({"message": err.message})
-  }
-})
+});
 
 connectDB()
   .then(() => {
-    console.log("Database Connection Established.")
+    console.log("Database Connection Established.");
     app.listen(PORT, () => {
-      console.log("Server is listening on the port 3000...")
-    })
+      console.log("Server is listening on the port 3000...");
+    });
   })
   .catch((err) => {
     console.error("Database Can Not Be Connected.");

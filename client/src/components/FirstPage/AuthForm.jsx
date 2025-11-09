@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Eye, EyeOff, Mail, User, Lock } from "lucide-react";
+import { Eye, EyeOff, Mail, User, Lock, CalendarDays } from "lucide-react";
 import google from "/google.webp";
 
 function AuthForms() {
@@ -8,7 +8,7 @@ function AuthForms() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
-    lastName: "",
+    dob: "",
     email: "",
     password: "",
   });
@@ -20,7 +20,6 @@ function AuthForms() {
       ...prev,
       [name]: value,
     }));
-    // Clear error for this field when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -36,8 +35,8 @@ function AuthForms() {
       if (!formData.firstName.trim()) {
         newErrors.firstName = "First name is required";
       }
-      if (!formData.lastName.trim()) {
-        newErrors.lastName = "Last name is required";
+      if (!formData.dob.trim()) {
+        newErrors.dob = "Date of Birth is required";
       }
     }
 
@@ -58,43 +57,20 @@ function AuthForms() {
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Prepare data for server
     const submitData = isLogin
       ? { email: formData.email, password: formData.password }
       : {
           firstName: formData.firstName,
-          lastName: formData.lastName,
+          dob: formData.dob,
           email: formData.email,
           password: formData.password,
         };
 
     try {
-      // Example API call structure (uncomment and modify for your backend)
-      /*
-      const response = await fetch(`/api/${isLogin ? 'login' : 'signup'}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(submitData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Authentication failed');
-      }
-      
-      const data = await response.json();
-      console.log('Success:', data);
-      // Handle success (e.g., store token, redirect)
-      */
-
-      // For now, just log the data
       console.log(`${isLogin ? "Login" : "Signup"} data:`, submitData);
       alert(
         `${
@@ -113,7 +89,7 @@ function AuthForms() {
     setIsLogin(!isLogin);
     setFormData({
       firstName: "",
-      lastName: "",
+      dob: "",
       email: "",
       password: "",
     });
@@ -123,7 +99,7 @@ function AuthForms() {
 
   return (
     <div className="w-full max-w-md mx-auto">
-      {/* Form Header */}
+      {/* Header */}
       <div className="mb-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">
           {isLogin ? "Welcome Back" : "Create Account"}
@@ -142,7 +118,6 @@ function AuthForms() {
 
       {/* Form */}
       <div className="space-y-5">
-        {/* Name Fields - Only show in signup mode */}
         {!isLogin && (
           <div className="grid grid-cols-2 gap-4">
             {/* First Name */}
@@ -151,7 +126,13 @@ function AuthForms() {
                 First Name
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
+                    formData.firstName.length > 0
+                      ? "text-red-500"
+                      : "text-gray-400"
+                  }`}
+                />
                 <input
                   type="text"
                   name="firstName"
@@ -168,38 +149,45 @@ function AuthForms() {
               )}
             </div>
 
-            {/* Last Name */}
+            {/* Date of Birth (CalendarDays icon) */}
             <div>
               <label className="block text-sm font-medium text-blue-900 mb-2">
-                Date Of Birth
+                Date of Birth
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <CalendarDays
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
+                    formData.dob.length > 0 ? "text-red-500" : "text-gray-400"
+                  }`}
+                />
                 <input
-                  type="Date"
-                  name="Date"
-                  value={formData.lastName}
+                  type="date"
+                  name="dob"
+                  value={formData.dob}
                   onChange={handleInputChange}
                   className={`w-full bg-white border ${
-                    errors.lastName ? "border-red-500" : "border-gray-200"
+                    errors.dob ? "border-red-500" : "border-gray-200"
                   } rounded-3xl pl-10 pr-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
-                  placeholder="Doe"
                 />
               </div>
-              {errors.lastName && (
-                <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>
+              {errors.dob && (
+                <p className="text-red-500 text-xs mt-1">{errors.dob}</p>
               )}
             </div>
           </div>
         )}
 
-        {/* Email Field */}
+        {/* Email */}
         <div>
           <label className="block text-sm font-medium text-blue-900 mb-2">
             Email Address
           </label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Mail
+              className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
+                formData.email.length > 0 ? "text-red-500" : "text-gray-400"
+              }`}
+            />
             <input
               type="email"
               name="email"
@@ -216,13 +204,17 @@ function AuthForms() {
           )}
         </div>
 
-        {/* Password Field */}
+        {/* Password */}
         <div>
           <label className="block text-sm font-medium text-blue-900 mb-2">
             Password
           </label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <Lock
+              className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
+                formData.password.length > 0 ? "text-red-500" : "text-gray-400"
+              }`}
+            />
             <input
               type={showPassword ? "text" : "password"}
               name="password"
@@ -238,11 +230,7 @@ function AuthForms() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
-              {showPassword ? (
-                <EyeOff className="w-5 h-5" />
-              ) : (
-                <Eye className="w-5 h-5" />
-              )}
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
           {errors.password && (
@@ -250,8 +238,8 @@ function AuthForms() {
           )}
         </div>
 
+        {/* Buttons */}
         <div className="flex">
-          {/* Social Login Buttons */}
           <div className="grid grid-cols-2 gap-5">
             <button
               type="button"
@@ -262,7 +250,6 @@ function AuthForms() {
             </button>
           </div>
 
-          {/* Submit Button */}
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}

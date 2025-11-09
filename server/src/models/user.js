@@ -1,13 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
-      unique: true,
       trim: true,
       minLength: 3,
       maxLength: 10,
@@ -23,9 +20,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      validator(value){
-        if(!validator.isEmail(value)){
-          throw new Error(`Invalid Email: ${value} Address.` ) 
+      validator(value) {
+        if (!validator.isEmail(value)) {
+          throw new Error(`Invalid Email: ${value} Address.`);
         }
       },
       lowercase: true,
@@ -36,7 +33,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
       minLength: 5,
-      maxLength: 20,
+      maxLength: 500,
     },
     dateOfBirth: {
       type: Date,
@@ -45,10 +42,9 @@ const userSchema = new mongoose.Schema(
     },
     gender: {
       type: String,
-      required: true,
       validate(value) {
         if (!["Male", "Female", "thers"].includes(value)) {
-          throw new error(
+          throw new Error(
             "Gender is not valid. It should be among male, female and others"
           );
         }
@@ -62,6 +58,11 @@ const userSchema = new mongoose.Schema(
       default:
         "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png",
       trim: true,
+      validator(value) {
+        if (!validator.isURL(value)) {
+          throw new error(`${value} is not a valid URL.`);
+        }
+      },
     },
     interests: {
       type: [String],
@@ -74,7 +75,7 @@ const userSchema = new mongoose.Schema(
       maxLength: 100,
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 const userModel = mongoose.model("User", userSchema);

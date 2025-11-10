@@ -7,7 +7,7 @@ function AuthForms() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: "",
+    name: "",
     dob: "",
     email: "",
     password: "",
@@ -32,8 +32,8 @@ function AuthForms() {
     const newErrors = {};
 
     if (!isLogin) {
-      if (!formData.firstName.trim()) {
-        newErrors.firstName = "First name is required";
+      if (!formData.name.trim()) {
+        newErrors.name = "Name is required";
       }
       if (!formData.dob.trim()) {
         newErrors.dob = "Date of Birth is required";
@@ -64,7 +64,7 @@ function AuthForms() {
     const submitData = isLogin
       ? { email: formData.email, password: formData.password }
       : {
-          firstName: formData.firstName,
+          name: formData.name,
           dob: formData.dob,
           email: formData.email,
           password: formData.password,
@@ -88,7 +88,7 @@ function AuthForms() {
   const toggleMode = () => {
     setIsLogin(!isLogin);
     setFormData({
-      firstName: "",
+      name: "",
       dob: "",
       email: "",
       password: "",
@@ -120,36 +120,34 @@ function AuthForms() {
       <div className="space-y-5">
         {!isLogin && (
           <div className="grid grid-cols-2 gap-4">
-            {/* First Name */}
+            {/* Name */}
             <div>
               <label className="block text-sm font-medium text-blue-900 mb-2">
-                First Name
+                Name
               </label>
               <div className="relative">
                 <User
                   className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
-                    formData.firstName.length > 0
-                      ? "text-red-500"
-                      : "text-gray-400"
+                    formData.name.length > 0 ? "text-red-500" : "text-gray-400"
                   }`}
                 />
                 <input
                   type="text"
-                  name="firstName"
-                  value={formData.firstName}
+                  name="name"
+                  value={formData.name}
                   onChange={handleInputChange}
                   className={`w-full bg-white border ${
-                    errors.firstName ? "border-red-500" : "border-gray-200"
+                    errors.name ? "border-red-500" : "border-gray-200"
                   } rounded-3xl pl-10 pr-4 py-3 text-gray-900 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all`}
                   placeholder="Full Name"
                 />
               </div>
-              {errors.firstName && (
-                <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>
+              {errors.name && (
+                <p className="text-red-500 text-xs mt-1">{errors.name}</p>
               )}
             </div>
 
-            {/* Date of Birth (CalendarDays icon) */}
+            {/* Date of Birth */}
             <div>
               <label className="block text-sm font-medium text-blue-900 mb-2">
                 Date of Birth
@@ -212,7 +210,9 @@ function AuthForms() {
           <div className="relative">
             <Lock
               className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
-                formData.password.length > 0 ? "text-red-500" : "text-gray-400"
+                formData.password.length > 0
+                  ? "text-red-500"
+                  : "text-gray-400"
               }`}
             />
             <input
@@ -230,7 +230,11 @@ function AuthForms() {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
-              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
             </button>
           </div>
           {errors.password && (

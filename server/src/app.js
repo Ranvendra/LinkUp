@@ -10,8 +10,10 @@ const middleware = require("./utils/validation");
 const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
+// Signup Api
+
 app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
-// await User.syncIndexes();
+  await User.syncIndexes();
 
   const { name, dateOfBirth, email, password } = req.body;
   // hashing
@@ -28,7 +30,7 @@ app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
 
   try {
     await data.save();
-    res.status(200).json({
+    res.status(200).json({ 
       Message: "User Added Successfully.",
       user: {
         name: name,
@@ -39,6 +41,32 @@ app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
     });
   } catch (err) {
     res.status(400).send(`Something Went Wrong:${err.message}`);
+  }
+});
+
+// Login Api
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email: email });
+
+    // do not give extra information to the attacker.
+    if (!user) {
+      return res.status(400).send("Invalid credentials,");
+    }
+
+    // compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).send("Invalid credentials.");
+    }
+
+    return res.send("Login Successfully.");
+  } catch (err) {
+    res.status(500).send("Server Failed :", err.message);
   }
 });
 

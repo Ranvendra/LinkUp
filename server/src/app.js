@@ -13,7 +13,7 @@ app.use(express.json());
 // Signup Api
 
 app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
-  await User.syncIndexes();
+  // await User.syncIndexes();
 
   const { name, dateOfBirth, email, password } = req.body;
   // hashing

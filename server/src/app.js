@@ -2,73 +2,39 @@ require("dotenv").config();
 
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const connectDB = require("./config/database");
-const User = require("./models/user");
-const bcrypt = require("bcrypt");
-const middleware = require("./utils/validation");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7777;
+
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:5173",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+// Middlewares
+app.use(cors(corsOptions));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-// Signup Api
+// Importing RouTers;
+const authRouter = require("./routes/auth");
+const profileRouter = require("./routes/profile");
+const requestRouter = require("./routes/requests");
 
-app.post("/signup", middleware.ValidateSignupData, async (req, res) => {
-  // await User.syncIndexes();
 
-  const { name, dateOfBirth, email, password } = req.body;
-  // hashing
-  const saltRounds = 10;
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+// routers
+app.use("/", authRouter);
+app.use("/", profileRouter);
+app.use("/", requestRouter);
 
-  // creating new instance of the model "User"
-  const data = new User({
-    name,
-    dateOfBirth,
-    email: email,
-    password: hashedPassword,
-  });
 
-  try {
-    await data.save();
-    res.status(200).json({ 
-      Message: "User Added Successfully.",
-      user: {
-        name: name,
-        email: email,
-        dateOfBirth: dateOfBirth,
-        password: password,
-      },
-    });
-  } catch (err) {
-    res.status(400).send(`Something Went Wrong:${err.message}`);
-  }
-});
 
-// Login Api
-
-app.post("/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email: email });
-
-    // do not give extra information to the attacker.
-    if (!user) {
-      return res.status(400).send("Invalid credentials,");
-    }
-
-    // compare password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      return res.status(400).send("Invalid credentials.");
-    }
-
-    return res.send("Login Successfully.");
-  } catch (err) {
-    res.status(500).send("Server Failed :", err.message);
-  }
-});
 
 // Testing purpose for server running.
 app.get("/test", async (req, res) => {
@@ -93,7 +59,7 @@ connectDB()
   .then(() => {
     console.log("Database Connection Established.");
     app.listen(PORT, () => {
-      console.log("Server is listening on the port 3000...");
+      console.log(`Server is listening on the port ${PORT}...`);
     });
   })
   .catch((err) => {

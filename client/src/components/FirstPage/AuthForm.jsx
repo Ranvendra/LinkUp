@@ -317,7 +317,7 @@ function AuthForms() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-linear-to-r from-blue-500 to-blue-600 text-white rounded-xl py-3 text-md font-semibold hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-500/30"
+              className="flex-1 bg-linear-to-r from-red-500 to-orange-400 text-white rounded-xl py-3 text-md font-semibold hover:from-red-600 hover:to-orange-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/30"
             >
               {isSubmitting
                 ? "Please wait..."

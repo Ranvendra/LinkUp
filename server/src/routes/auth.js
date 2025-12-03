@@ -4,7 +4,7 @@ const authRouter = express.Router();
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const {ValidateSignupData} = require("../utils/validation");
+const { ValidateSignupData } = require("../utils/validation");
 
 // router and app logic almost the same way.
 
@@ -93,7 +93,7 @@ authRouter.post("/login", async (req, res) => {
     res.cookie("LinkupToken", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 

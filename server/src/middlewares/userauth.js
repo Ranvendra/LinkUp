@@ -5,7 +5,15 @@ const userAuth = async (req, res, next) => {
   //read the cookies
 
   try {
-    const token = req.cookies.LinkupToken;
+    // Check for token in cookies or Authorization header
+    const { LinkupToken } = req.cookies;
+    const authHeader = req.headers['authorization'];
+
+    let token = LinkupToken;
+
+    if (!token && authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.split(' ')[1];
+    }
 
     if (!token) {
       throw new Error("Invalid Token");

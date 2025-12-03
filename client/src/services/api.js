@@ -11,18 +11,40 @@ const api = axios.create({
   withCredentials: true, // This allows cookies to be sent with requests
 });
 
+// Add a request interceptor to inject the token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Auth API calls
 export const authAPI = {
   signup: (userData) => {
     return api.post('/signup', userData);
   },
 
-  login: (credentials) => {
-    return api.post('/login', credentials);
+  login: async (credentials) => {
+    const response = await api.post('/login', credentials);
+    if (response.data.token) {
+      localStorage.setItem('token', response.data.token);
+    }
+    return response;
   },
 
-  logout: () => {
-    return api.post('/logout');
+  logout: async () => {
+    try {
+      await api.post('/logout');
+    } finally {
+      localStorage.removeItem('token');
+    }
   },
 };
 

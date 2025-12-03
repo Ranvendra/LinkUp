@@ -21,6 +21,7 @@ const NavBar = () => {
   const handleLogout = async () => {
     try {
       await api.post("/logout");
+      localStorage.removeItem("token");
       dispatch(removeUser());
       navigate("/");
     } catch (err) {

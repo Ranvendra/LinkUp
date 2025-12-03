@@ -1,39 +1,38 @@
-import React, { useState, useEffect } from 'react';
-import { Check, X, AlertCircle, Info } from 'lucide-react';
+import { useEffect } from "react";
+import { CheckCircle, XCircle, X } from "lucide-react";
 
-const Toast = ({ message, type = 'success', duration = 4000, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true);
-
+const Toast = ({ message, type = "success", onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
-      setIsVisible(false);
-      onClose && onClose();
-    }, duration);
+      onClose();
+    }, 3000);
 
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
-
-  if (!isVisible) return null;
-
-  const bgColors = {
-    success: 'bg-gradient-to-r from-green-400 to-emerald-500',
-    error: 'bg-gradient-to-r from-red-400 to-rose-500',
-    warning: 'bg-gradient-to-r from-yellow-400 to-amber-500',
-    info: 'bg-gradient-to-r from-blue-400 to-cyan-500',
-  };
-
-  const icons = {
-    success: <Check className="w-5 h-5" />,
-    error: <X className="w-5 h-5" />,
-    warning: <AlertCircle className="w-5 h-5" />,
-    info: <Info className="w-5 h-5" />,
-  };
+  }, [onClose]);
 
   return (
-    <div className={`fixed top-6 right-6 ${bgColors[type]} text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 animate-slide-in-right z-50 max-w-md`}>
-      <div className="shrink-0">{icons[type]}</div>
-      <div className="flex-1">
-        <p className="font-semibold text-sm sm:text-base">{message}</p>
+    <div className="fixed top-5 right-5 z-50 animate-slideIn">
+      <div
+        className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border ${
+          type === "success"
+            ? "bg-white border-green-100 text-green-800"
+            : "bg-white border-red-100 text-red-800"
+        }`}
+      >
+        {type === "success" ? (
+          <CheckCircle className="w-5 h-5 text-green-500" />
+        ) : (
+          <XCircle className="w-5 h-5 text-red-500" />
+        )}
+        <p className="text-sm font-medium">{message}</p>
+        <button
+          onClick={onClose}
+          className={`p-1 rounded-full hover:bg-gray-100 transition-colors ${
+            type === "success" ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );

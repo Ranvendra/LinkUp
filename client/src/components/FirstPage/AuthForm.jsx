@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, Mail, User, Lock, CalendarDays } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
 import Toast from "../Toast";
 import google from "/google.webp";
 
 function AuthForms() {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -17,7 +19,7 @@ function AuthForms() {
   });
   const [errors, setErrors] = useState({});
 
-  const showToast = (message, type = 'success') => {
+  const showToast = (message, type = "success") => {
     setToast({ message, type });
   };
 
@@ -78,11 +80,11 @@ function AuthForms() {
         });
 
         if (response.data.success) {
-          showToast(response.data.message, 'success');
-          
+          showToast(response.data.message, "success");
+
           // Store user info and token
-          localStorage.setItem('user', JSON.stringify(response.data.user));
-          localStorage.setItem('token', response.data.token);
+          localStorage.setItem("user", JSON.stringify(response.data.user));
+          localStorage.setItem("token", response.data.token);
 
           // Reset form
           setFormData({
@@ -93,11 +95,11 @@ function AuthForms() {
           });
 
           console.log("Login successful:", response.data.user);
-          
-          // You can redirect here after a short delay
+
+          // Redirect to feed
           setTimeout(() => {
-            // window.location.href = '/dashboard';
-          }, 2000);
+            navigate("/feed");
+          }, 1000);
         }
       } else {
         // Signup request
@@ -109,8 +111,8 @@ function AuthForms() {
         });
 
         if (response.data.success) {
-          showToast(response.data.message, 'success');
-          
+          showToast(response.data.message, "success");
+
           // Reset form
           setFormData({
             name: "",
@@ -129,10 +131,11 @@ function AuthForms() {
       }
     } catch (error) {
       console.error("Error:", error);
-      const errorMessage = error.response?.data?.message || 
-                          error.message || 
-                          "An error occurred. Please try again.";
-      showToast(errorMessage, 'error');
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "An error occurred. Please try again.";
+      showToast(errorMessage, "error");
     } finally {
       setIsSubmitting(false);
     }

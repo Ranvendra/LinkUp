@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../store/feedSlice";
-import { Heart, X, Sparkles } from "lucide-react";
+import { HeartPlus, TicketX, Sparkles } from "lucide-react";
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -76,12 +76,12 @@ const Feed = () => {
     <div className="animate-fadeIn">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Discover</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-1 mt-5">Discover</h1>
         <p className="text-gray-500">Swipe to connect with amazing people</p>
       </div>
 
       {/* Tinder-style Card Stack */}
-      <div className="flex justify-center items-center">
+      <div className="flex justify-center items-center]">
         <div className="relative w-full max-w-md">
           {/* Card Stack - Show up to 3 cards with offset */}
           {feed.slice(0, 3).map((user, index) => (
@@ -102,7 +102,7 @@ const Feed = () => {
             >
               <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-2xl">
                 {/* Image */}
-                <div className="relative aspect-3/4 overflow-hidden bg-gray-100">
+                <div className="relative aspect-49/50 overflow-hidden bg-gray-100">
                   <img
                     src={
                       user.photoUrl ||
@@ -151,18 +151,18 @@ const Feed = () => {
 
                 {/* Action Buttons - Only on front card */}
                 {index === 0 && (
-                  <div className="p-6 flex gap-4 justify-center bg-white">
+                  <div className="p-6 flex gap-10 justify-center bg-white">
                     <button
                       onClick={() => sendRequest("ignored", user._id)}
-                      className="w-16 h-16 bg-white border-2 border-gray-300 text-gray-600 rounded-full hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center shadow-lg"
+                      className="w-18 h-18 bg-white border-2 border-gray-300 text-gray-600 rounded-full hover:bg-gray-50 transition-all flex items-center justify-center shadow-lg hover:scale-[0.96]"
                     >
-                      <X className="w-7 h-7" />
+                      <TicketX className="w-10 h-10" />
                     </button>
                     <button
                       onClick={() => sendRequest("interested", user._id)}
-                      className="w-20 h-20 bg-[#FF6B5A] text-white rounded-full hover:bg-[#E85545] transition-all flex items-center justify-center shadow-2xl shadow-[#FF6B5A]/40"
+                      className="w-18 h-18 border-3 bg-[#fd1c6f] text-white rounded-full hover:bg-[#ff2264] hover:shadow-[#FF6B5A]/80 transition-all flex items-center justify-center shadow-2xl shadow-[#FF6B5A]/40 hover:scale-[0.96]"
                     >
-                      <Heart className="w-9 h-9" />
+                      <HeartPlus className="w-12 h-12" />
                     </button>
                   </div>
                 )}
@@ -184,9 +184,9 @@ const Feed = () => {
       </div>
 
       {/* Users Remaining Indicator */}
-      <div className="mt-6 text-center">
-        <p className="text-sm text-gray-500">
-          {feed.length} {feed.length === 1 ? "person" : "people"} to discover
+      <div className="fixed bottom-5 w-20/25 flex justify-center items-center">
+        <p className="text-2xl text-[#fe103f] font-pacifico">
+          <span className="text-5xl text-[#216fff]">{feed.length}</span> <span className="px-1"></span> {feed.length === 1 ? "Person" : "People"} To Discover
         </p>
       </div>
     </div>

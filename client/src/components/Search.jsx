@@ -114,7 +114,9 @@ const Search = () => {
     <div className="animate-fadeIn">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Search Users</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-10">
+          Search Users
+        </h1>
         <p className="text-gray-500">Find and connect with people</p>
       </div>
 
@@ -137,7 +139,7 @@ const Search = () => {
           </div>
           <button
             onClick={handleSearch}
-            className="px-6 py-3 bg-[#FF6B5A] text-white rounded-xl font-medium hover:bg-[#E85545] transition-all flex items-center gap-2 shadow-lg shadow-[#FF6B5A]/30"
+            className="px-6 py-2 bg-red-500 text-white rounded-xl font-medium hover:scale-[0.95] transition-all flex items-center gap-2 shadow-lg shadow-[#FF6B5A]/30"
           >
             <SearchIcon className="w-5 h-5" />
             <span className="hidden sm:inline">Search</span>

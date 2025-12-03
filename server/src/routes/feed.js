@@ -118,7 +118,7 @@ feedRouter.get("/feed", userAuth, async (req, res) => {
 
 
         const users = await User.find(filter)
-            .select("name firstName lastName photoUrl age gender about skills dateOfBirth")
+            .select("name profilePicture age gender about skills dateOfBirth")
             .skip(skip)
             .limit(limit)
             .sort(sort);

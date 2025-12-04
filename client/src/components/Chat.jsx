@@ -400,7 +400,7 @@ const Chat = () => {
                               {isMe && (
                                 <button
                                   onClick={() => startEditing(msg)}
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-[#FF6B5A]"
+                                  className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-gray-400 hover:text-[#FF6B5A] p-1"
                                   title="Edit message"
                                 >
                                   <Edit2 className="w-3 h-3" />

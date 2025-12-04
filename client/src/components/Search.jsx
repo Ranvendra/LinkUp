@@ -315,7 +315,7 @@ const Search = () => {
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
                   {/* Connect Button - Visible on hover */}
-                  <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                  <div className="absolute top-4 right-4 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300 transform translate-y-0 md:translate-y-2 md:group-hover:translate-y-0">
                     {user.connectionStatus === "connected" ? (
                       <div className="bg-green-500 text-white px-4 py-2 rounded-full font-medium text-sm flex items-center gap-2 shadow-lg">
                         <Check className="w-4 h-4" />

@@ -153,6 +153,7 @@ chatRouter.put("/chat/message/:messageId", userAuth, async (req, res) => {
 
         message.content = content;
         await message.save();
+        await message.populate("sender", "name firstName lastName photoUrl profilePicture");
 
         res.json({ message: "Message updated successfully", data: message });
     } catch (err) {

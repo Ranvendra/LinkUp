@@ -110,7 +110,7 @@ const Connections = () => {
           />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-blue-500 mb-1 font-pacifico">
+          <h1 className="text-2xl font-bold text-blue-500 mb-1">
             {user?.name}
           </h1>
           <p className="text-gray-500 font-medium mb-3">{user?.headline}</p>
@@ -131,7 +131,7 @@ const Connections = () => {
         {/* Left Column: My Connections */}
         <div className="lg:col-span-2 space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold font-pacifico text-red-500 flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-red-500 flex items-center gap-2">
               <UserPlus className="w-6 h-6 text-red-600" strokeWidth={3} />
               Connections
             </h2>
@@ -231,7 +231,7 @@ const Connections = () => {
         {/* Right Column: Invitations */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold font-pacifico text-red-500 flex items-center gap-2">
+            <h2 className="text-2xl font-bold text-red-500 flex items-center gap-2">
               <BellDot className="w-6 h-6 text-red-600" strokeWidth={3} />
               Invitations
             </h2>

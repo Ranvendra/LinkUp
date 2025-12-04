@@ -171,7 +171,7 @@ const NavBar = () => {
                     />
                   </div>
                   <div className="hidden md:block text-left relative z-10">
-                    <p className="text-sm font-medium text-gray-900">
+                    <p className="text-sm font-medium text-red-500">
                       {user.name}
                     </p>
                   </div>
@@ -208,7 +208,7 @@ const NavBar = () => {
                     }}
                   >
                     <div className="px-6 py-4 border-b border-gray-100">
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-sm font-bold text-red-500">
                         {user.firstName || user.name}
                       </p>
                       <p className="text-xs text-gray-500 truncate">

@@ -268,7 +268,7 @@ const Connections = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 text-sm">
-                            {user.firstName} {user.lastName}
+                            {user.name}
                           </h3>
                           <p className="text-xs text-gray-500 truncate">
                             {user.about || "No bio available"}

@@ -210,7 +210,7 @@ const Chat = () => {
             </div>
 
             {/* List */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
               {/* Recent Chats */}
               {filteredChats.length > 0 ? (
                 <div>
@@ -344,7 +344,7 @@ const Chat = () => {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar">
                   {messages.map((msg, idx) => {
                     const isMe = msg.sender._id === user._id;
                     return (

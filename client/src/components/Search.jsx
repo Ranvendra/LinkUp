@@ -12,6 +12,7 @@ import {
   UserPlus,
   Check,
 } from "lucide-react";
+import Toast from "./Toast";
 
 const Search = () => {
   const [users, setUsers] = useState([]);
@@ -27,6 +28,7 @@ const Search = () => {
   const [sortOrder, setSortOrder] = useState("");
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [requestedUsers, setRequestedUsers] = useState(new Set());
+  const [toast, setToast] = useState(null);
 
   const [abortController, setAbortController] = useState(null);
 
@@ -83,7 +85,11 @@ const Search = () => {
       setRequestedUsers((prev) => new Set(prev).add(userId));
     } catch (err) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to send connection request");
+      setToast({
+        message:
+          err.response?.data?.message || "Failed to send connection request",
+        type: "error",
+      });
     }
   };
 
@@ -472,6 +478,13 @@ const Search = () => {
             </button>
           </div>
         </>
+      )}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

@@ -11,7 +11,7 @@ profileRouter.get("/profile/view", userAuth, async (req, res) => {
     const user = req.user;
     res.send(user);
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 
@@ -34,7 +34,7 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
       data: loggedInUser,
     });
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 
@@ -64,7 +64,7 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
 
     res.json({ message: "Password updated successfully" });
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 
@@ -77,7 +77,7 @@ profileRouter.delete("/profile/delete", userAuth, async (req, res) => {
     });
     res.json({ message: "User deleted successfully" });
   } catch (err) {
-    res.status(400).send("ERROR : " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 

@@ -43,7 +43,7 @@ chatRouter.get("/chat", userAuth, async (req, res) => {
 
         res.json({ message: "Chats fetched successfully", data: validChats });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -57,7 +57,7 @@ chatRouter.get("/chat/:chatId", userAuth, async (req, res) => {
 
         res.json({ message: "Messages fetched successfully", data: messages });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -95,7 +95,7 @@ chatRouter.post("/chat/:targetUserId", userAuth, async (req, res) => {
 
         res.json({ message: "Chat initiated", data: chat });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -118,7 +118,7 @@ chatRouter.put("/chat/read/:chatId", userAuth, async (req, res) => {
 
         res.json({ message: "Messages marked as read" });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -130,7 +130,7 @@ chatRouter.delete("/chat/:chatId", userAuth, async (req, res) => {
         await Message.deleteMany({ chatId });
         res.json({ message: "Chat deleted successfully" });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -141,7 +141,7 @@ chatRouter.delete("/message/:messageId", userAuth, async (req, res) => {
         await Message.findByIdAndDelete(messageId);
         res.json({ message: "Message deleted successfully" });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 
@@ -166,7 +166,7 @@ chatRouter.put("/chat/message/:messageId", userAuth, async (req, res) => {
 
         res.json({ message: "Message updated successfully", data: message });
     } catch (err) {
-        res.status(400).send("ERROR: " + err.message);
+        res.status(400).json({ message: err.message });
     }
 });
 

@@ -65,6 +65,10 @@ const Connections = () => {
       setRequests((prev) => prev.filter((r) => r._id !== requestId));
     } catch (err) {
       console.error(err);
+      setToast({
+        message: err.response?.data?.message || "Failed to update request",
+        type: "error",
+      });
       fetchData(); // Revert on error
     }
   };
@@ -80,7 +84,10 @@ const Connections = () => {
       setToast({ message: "Connection removed successfully", type: "success" });
     } catch (err) {
       console.error(err);
-      setToast({ message: "Failed to remove connection", type: "error" });
+      setToast({
+        message: err.response?.data?.message || "Failed to remove connection",
+        type: "error",
+      });
     }
   };
 

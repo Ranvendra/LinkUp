@@ -66,7 +66,7 @@ requestRouter.post(
         data,
       });
     } catch (err) {
-      res.status(400).send("ERROR: " + err.message);
+      res.status(400).json({ message: err.message });
     }
   }
 );
@@ -96,7 +96,7 @@ requestRouter.get(
         data: validRequests,
       });
     } catch (err) {
-      res.status(400).send("ERROR: " + err.message);
+      res.status(400).json({ message: err.message });
     }
   }
 );
@@ -133,7 +133,7 @@ requestRouter.post(
 
       res.json({ message: "Connection request " + status, data });
     } catch (err) {
-      res.status(400).send("ERROR: " + err.message);
+      res.status(400).json({ message: err.message });
     }
   }
 );
@@ -168,7 +168,7 @@ requestRouter.get("/user/connections", userAuth, async (req, res) => {
       data: connectedUsers,
     });
   } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 
@@ -206,7 +206,7 @@ requestRouter.delete("/request/remove/:userId", userAuth, async (req, res) => {
 
     res.json({ message: "Connection and chat history removed successfully" });
   } catch (err) {
-    res.status(400).send("ERROR: " + err.message);
+    res.status(400).json({ message: err.message });
   }
 });
 

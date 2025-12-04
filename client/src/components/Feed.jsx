@@ -3,11 +3,13 @@ import api from "../services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../store/feedSlice";
 import { HeartPlus, TicketX, Sparkles } from "lucide-react";
+import Toast from "./Toast";
 
 const Feed = () => {
   const dispatch = useDispatch();
   const feed = useSelector((store) => store.feed);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState(null);
 
   const fetchFeed = async () => {
     if (loading) return;
@@ -40,6 +42,10 @@ const Feed = () => {
       }
     } catch (err) {
       console.error(err);
+      setToast({
+        message: err.response?.data?.message || "Failed to send request",
+        type: "error",
+      });
     }
   };
 
@@ -194,6 +200,13 @@ const Feed = () => {
           {feed.length === 1 ? "Person" : "People"} To Discover
         </p>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

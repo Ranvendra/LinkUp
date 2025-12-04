@@ -3,20 +3,162 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import api, { authAPI } from "../services/api";
 import { addUser, removeUser } from "../store/userSlice";
-import { Save, Camera, Mail, Edit2, CheckCircle2 } from "lucide-react";
+import {
+  Save,
+  Camera,
+  Mail,
+  Edit2,
+  CheckCircle2,
+  Lock,
+  X,
+  Calendar,
+  User,
+  Hash,
+  Heart,
+} from "lucide-react";
+
+const ChangePasswordModal = ({ onClose, onSuccess }) => {
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setPasswords({ ...passwords, [e.target.name]: e.target.value });
+    setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (passwords.newPassword !== passwords.confirmPassword) {
+      setError("New passwords do not match");
+      return;
+    }
+    if (passwords.newPassword.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await api.patch("/profile/password", {
+        currentPassword: passwords.currentPassword,
+        newPassword: passwords.newPassword,
+      });
+      onSuccess();
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to update password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn">
+      <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scaleIn mx-4">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+            <Lock className="w-5 h-5 text-[#FF6B5A]" />
+            Change Password
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex items-center gap-2">
+            <X className="w-4 h-4 shrink-0" />
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Current Password
+            </label>
+            <input
+              type="password"
+              name="currentPassword"
+              value={passwords.currentPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              New Password
+            </label>
+            <input
+              type="password"
+              name="newPassword"
+              value={passwords.newPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Confirm New Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              value={passwords.confirmPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+              required
+            />
+          </div>
+
+          <div className="flex gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 px-4 py-2.5 bg-[#FF6B5A] text-white rounded-xl font-medium hover:bg-[#E85545] transition-all shadow-lg shadow-[#FF6B5A]/30 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Updating..." : "Update Password"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 const Profile = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || user?.name || "",
-    lastName: user?.lastName || "",
+    name: user?.name || "",
+    username: user?.username || "",
     photoUrl: user?.photoUrl || user?.profilePicture || "",
     about: user?.about || "",
     gender: user?.gender || "Male",
-    age: user?.age || "",
+    dateOfBirth: user?.dateOfBirth
+      ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+      : "",
+    interests: user?.interests?.join(", ") || "",
   });
   const [toast, setToast] = useState(null);
 
@@ -27,7 +169,18 @@ const Profile = () => {
 
   const handleSave = async () => {
     try {
-      const res = await api.patch("/profile/edit", formData);
+      // Convert interests string back to array
+      const { photoUrl, ...rest } = formData;
+      const dataToSend = {
+        ...rest,
+        interests: formData.interests
+          .split(",")
+          .map((i) => i.trim())
+          .filter((i) => i),
+        profilePicture: photoUrl,
+      };
+
+      const res = await api.patch("/profile/edit", dataToSend);
       dispatch(addUser(res.data.data));
       setToast({ type: "success", message: "Profile updated successfully!" });
       setIsEditing(false);
@@ -44,10 +197,10 @@ const Profile = () => {
   if (!user) return null;
 
   return (
-    <div className="animate-fadeIn max-w-4xl mx-auto">
+    <div className="animate-fadeIn max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed top-20 right-4 z-50 animate-slideDown">
+        <div className="fixed top-24 right-4 z-50 animate-slideDown">
           <div
             className={`px-6 py-3 rounded-xl shadow-lg flex items-center gap-3 ${
               toast.type === "success"
@@ -61,32 +214,58 @@ const Profile = () => {
         </div>
       )}
 
+      {/* Password Modal */}
+      {showPasswordModal && (
+        <ChangePasswordModal
+          onClose={() => setShowPasswordModal(false)}
+          onSuccess={() => {
+            setToast({
+              type: "success",
+              message: "Password updated successfully!",
+            });
+            setTimeout(() => setToast(null), 3000);
+          }}
+        />
+      )}
+
       {/* Header */}
-      <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+      <div className="mb-8 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
           <p className="text-gray-500">Manage your personal information</p>
         </div>
         {!isEditing ? (
-          <button
-            onClick={() => setIsEditing(true)}
-            className="px-6 py-2.5 bg-[#FF6B5A] text-white rounded-xl font-medium hover:bg-[#E85545] transition-all flex items-center gap-2 shadow-lg shadow-[#FF6B5A]/30"
-          >
-            <Edit2 className="w-4 h-4" />
-            Edit Profile
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all flex items-center gap-2"
+            >
+              <Lock className="w-4 h-4" />
+              Change Password
+            </button>
+            <button
+              onClick={() => setIsEditing(true)}
+              className="px-6 py-2.5 bg-[#FF6B5A] text-white rounded-xl font-medium hover:bg-[#E85545] transition-all flex items-center gap-2 shadow-lg shadow-[#FF6B5A]/30"
+            >
+              <Edit2 className="w-4 h-4" />
+              Edit Profile
+            </button>
+          </div>
         ) : (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-3">
             <button
               onClick={() => {
                 setIsEditing(false);
                 setFormData({
-                  firstName: user?.firstName || user?.name || "",
-                  lastName: user?.lastName || "",
+                  name: user?.name || "",
+                  username: user?.username || "",
                   photoUrl: user?.photoUrl || user?.profilePicture || "",
                   about: user?.about || "",
                   gender: user?.gender || "Male",
-                  age: user?.age || "",
+                  dateOfBirth: user?.dateOfBirth
+                    ? new Date(user.dateOfBirth).toISOString().split("T")[0]
+                    : "",
+                  interests: user?.interests?.join(", ") || "",
                 });
               }}
               className="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all"
@@ -98,7 +277,7 @@ const Profile = () => {
               className="px-6 py-2.5 bg-[#FF6B5A] text-white rounded-xl font-medium hover:bg-[#E85545] transition-all flex items-center gap-2 shadow-lg shadow-[#FF6B5A]/30"
             >
               <Save className="w-4 h-4" />
-              Save
+              Save Changes
             </button>
           </div>
         )}
@@ -137,133 +316,206 @@ const Profile = () => {
 
         {/* Content */}
         <div className="pt-20 px-8 pb-8">
-          <div className="mb-6">
+          <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-900 mb-1">
-              {user.firstName || user.name} {user.lastName}
+              {user.name}
             </h2>
-            <p className="text-gray-500 flex items-center gap-2">
-              <Mail className="w-4 h-4" />
-              {user.email}
-            </p>
+            <div className="flex items-center gap-4 text-gray-500 text-sm">
+              <span className="flex items-center gap-1">
+                <User className="w-4 h-4" />@{user.username || "username"}
+              </span>
+              <span className="flex items-center gap-1">
+                <Mail className="w-4 h-4" />
+                {user.email}
+              </span>
+            </div>
           </div>
 
           {/* Form Fields */}
-          <div className="space-y-6">
-            {/* Name Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
-                  />
-                ) : (
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
-                    {user.firstName || user.name}
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
-                  />
-                ) : (
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
-                    {user.lastName || "-"}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Photo URL */}
-            {isEditing && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Photo URL
-                </label>
-                <input
-                  type="text"
-                  name="photoUrl"
-                  value={formData.photoUrl}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
-                  placeholder="https://example.com/photo.jpg"
-                />
-              </div>
-            )}
-
-            {/* About */}
+          <div className="space-y-8">
+            {/* Basic Info Section */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                About
-              </label>
-              {isEditing ? (
-                <textarea
-                  name="about"
-                  value={formData.about}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all resize-none h-24"
-                  placeholder="Tell us about yourself..."
-                />
-              ) : (
-                <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
-                  {user.about || "No bio yet"}
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <User className="w-5 h-5 text-[#FF6B5A]" />
+                Basic Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                      placeholder="John Doe"
+                    />
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
+                      {user.name}
+                    </div>
+                  )}
                 </div>
-              )}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Username
+                  </label>
+                  {isEditing ? (
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        @
+                      </span>
+                      <input
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        className="w-full pl-8 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                        placeholder="username"
+                      />
+                    </div>
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
+                      @{user.username || "-"}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
-            {/* Gender and Age */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Gender
-                </label>
-                {isEditing ? (
-                  <select
-                    name="gender"
-                    value={formData.gender}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
-                  >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Others">Others</option>
-                  </select>
-                ) : (
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
-                    {user.gender || "-"}
-                  </div>
-                )}
+            {/* Personal Details Section */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-[#FF6B5A]" />
+                Personal Details
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date of Birth
+                  </label>
+                  {isEditing ? (
+                    <input
+                      type="date"
+                      name="dateOfBirth"
+                      value={formData.dateOfBirth}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                    />
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
+                      {formData.dateOfBirth || "-"}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Gender
+                  </label>
+                  {isEditing ? (
+                    <select
+                      name="gender"
+                      value={formData.gender}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                    >
+                      <option value="Male">Male</option>
+                      <option value="Female">Female</option>
+                      <option value="Others">Others</option>
+                    </select>
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
+                      {user.gender || "-"}
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Age
-                </label>
-                {isEditing ? (
-                  <input
-                    type="number"
-                    name="age"
-                    value={formData.age}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
-                  />
-                ) : (
-                  <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
-                    {user.age || "-"}
+            </div>
+
+            {/* About & Interests */}
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                <Heart className="w-5 h-5 text-[#FF6B5A]" />
+                About & Interests
+              </h3>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    About
+                  </label>
+                  {isEditing ? (
+                    <textarea
+                      name="about"
+                      value={formData.about}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all resize-none h-24"
+                      placeholder="Tell us about yourself..."
+                    />
+                  ) : (
+                    <div className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900">
+                      {user.about || "No bio yet"}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Interests{" "}
+                    <span className="text-gray-400 font-normal">
+                      (comma separated)
+                    </span>
+                  </label>
+                  {isEditing ? (
+                    <div className="relative">
+                      <Hash className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        name="interests"
+                        value={formData.interests}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                        placeholder="Coding, Music, Travel..."
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {user.interests && user.interests.length > 0 ? (
+                        user.interests.map((interest, idx) => (
+                          <span
+                            key={idx}
+                            className="px-3 py-1 bg-red-50 text-red-600 rounded-full text-sm font-medium border border-red-100"
+                          >
+                            #{interest}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-gray-500 text-sm italic">
+                          No interests added
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {isEditing && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Photo URL
+                    </label>
+                    <div className="relative">
+                      <Camera className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        name="photoUrl"
+                        value={formData.photoUrl}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#FF6B5A] focus:ring-2 focus:ring-[#FF6B5A]/10 transition-all"
+                        placeholder="https://example.com/photo.jpg"
+                      />
+                    </div>
                   </div>
                 )}
               </div>

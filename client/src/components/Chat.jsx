@@ -158,9 +158,10 @@ const Chat = () => {
 
   const filteredChats = chats.filter((chat) => {
     const otherUser = getOtherParticipant(chat);
-    const name = `${otherUser?.firstName || ""} ${
-      otherUser?.lastName || ""
-    }`.toLowerCase();
+    const name = (
+      otherUser?.name ||
+      `${otherUser?.firstName || ""} ${otherUser?.lastName || ""}`
+    ).toLowerCase();
     return name.includes(searchQuery.toLowerCase());
   });
 
@@ -246,8 +247,10 @@ const Chat = () => {
                         <div className="flex-1 min-w-0">
                           <div className="flex justify-between items-baseline mb-1">
                             <h3 className="font-semibold text-gray-900 text-sm truncate">
-                              {otherUser?.firstName || otherUser?.name}{" "}
-                              {otherUser?.lastName}
+                              {otherUser?.name ||
+                                (otherUser?.firstName
+                                  ? `${otherUser.firstName} ${otherUser.lastName}`
+                                  : "Unknown User")}
                             </h3>
                             <span
                               className={`text-xs ml-2 shrink-0 ${
@@ -328,9 +331,11 @@ const Chat = () => {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 text-sm">
-                        {getOtherParticipant(activeChat)?.firstName ||
-                          getOtherParticipant(activeChat)?.name}{" "}
-                        {getOtherParticipant(activeChat)?.lastName}
+                        {getOtherParticipant(activeChat)?.name ||
+                          getOtherParticipant(activeChat)?.firstName +
+                            " " +
+                            getOtherParticipant(activeChat)?.lastName ||
+                          "Unknown User"}
                       </h3>
                       <p className="text-xs text-green-600 flex items-center gap-1">
                         <span className="w-2 h-2 bg-green-500 rounded-full"></span>
@@ -346,7 +351,13 @@ const Chat = () => {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 custom-scrollbar">
                   {messages.map((msg, idx) => {
-                    const isMe = msg.sender._id === user._id;
+                    const isMe = msg.sender?._id === user._id;
+                    const senderName = msg.sender?.name || "Deleted User";
+                    const senderPhoto =
+                      msg.sender?.photoUrl ||
+                      msg.sender?.profilePicture ||
+                      "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png";
+
                     return (
                       <div
                         key={idx}
@@ -361,12 +372,8 @@ const Chat = () => {
                         >
                           <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 shrink-0">
                             <img
-                              src={
-                                msg.sender.photoUrl ||
-                                msg.sender.profilePicture ||
-                                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                              }
-                              alt="User"
+                              src={senderPhoto}
+                              alt={senderName}
                               className="w-full h-full object-cover"
                             />
                           </div>

@@ -32,7 +32,16 @@ chatRouter.get("/chat", userAuth, async (req, res) => {
             })
         );
 
-        res.json({ message: "Chats fetched successfully", data: chatsWithUnreadCount });
+        // Filter out chats where participants are missing (deleted users)
+        const validChats = chatsWithUnreadCount.filter((chat) => {
+            return (
+                chat.participants &&
+                chat.participants.length === 2 &&
+                chat.participants.every((p) => p !== null)
+            );
+        });
+
+        res.json({ message: "Chats fetched successfully", data: validChats });
     } catch (err) {
         res.status(400).send("ERROR: " + err.message);
     }

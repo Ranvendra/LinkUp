@@ -109,7 +109,12 @@ const Feed = () => {
                       user.profilePicture ||
                       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                     }
-                    alt={user.firstName || user.name}
+                    alt={
+                      user.name ||
+                      (user.firstName
+                        ? `${user.firstName} ${user.lastName || ""}`
+                        : "User")
+                    }
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
@@ -117,8 +122,10 @@ const Feed = () => {
                   {/* User Info Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                     <h2 className="text-3xl font-bold mb-1">
-                      {user.firstName || user.name}{" "}
-                      {user.lastName && user.lastName}
+                      {user.name ||
+                        (user.firstName
+                          ? `${user.firstName} ${user.lastName || ""}`
+                          : "Unknown User")}
                       {user.age && `, ${user.age}`}
                     </h2>
                     <p className="text-white/90 text-lg mb-3">

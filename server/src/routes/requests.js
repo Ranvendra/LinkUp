@@ -87,9 +87,13 @@ requestRouter.get(
         "name firstName lastName photoUrl profilePicture about gender age"
       );
 
+      const validRequests = connectionRequests.filter(
+        (req) => req.fromUserId !== null
+      );
+
       res.json({
         message: "Data fetched successfully",
-        data: connectionRequests,
+        data: validRequests,
       });
     } catch (err) {
       res.status(400).send("ERROR: " + err.message);
@@ -148,14 +152,16 @@ requestRouter.get("/user/connections", userAuth, async (req, res) => {
       .populate("fromUserId", "name firstName lastName photoUrl profilePicture about gender age")
       .populate("toUserId", "name firstName lastName photoUrl profilePicture about gender age");
 
-    // Transform to return just the connected users
-    const connectedUsers = connections.map((conn) => {
-      if (conn.fromUserId._id.toString() === loggedInUser._id.toString()) {
-        return conn.toUserId;
-      } else {
-        return conn.fromUserId;
-      }
-    });
+    // Transform to return just the connected users and filter out nulls
+    const connectedUsers = connections
+      .map((conn) => {
+        if (conn.fromUserId._id.toString() === loggedInUser._id.toString()) {
+          return conn.toUserId;
+        } else {
+          return conn.fromUserId;
+        }
+      })
+      .filter((user) => user !== null);
 
     res.json({
       message: "Connections fetched successfully",

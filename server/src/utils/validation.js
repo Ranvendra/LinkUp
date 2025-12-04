@@ -37,23 +37,26 @@ const ValidateSignupData = async (req, res, next) => {
   next();
 };
 
-const validateEditProfileData = async (req) => {
+const validateEditProfileData = (req) => {
   const allowedEditFields = [
     "name",
-    "password",
+    "username",
     "dateOfBirth",
     "gender",
     "profilePicture",
     "interests",
     "about",
+    "age",
   ];
 
-  const isEditAllowed = Object.keys(req.body).every((fields)=> allowedEditFields.includes(fields))
+  const isEditAllowed = Object.keys(req.body).every((field) =>
+    allowedEditFields.includes(field)
+  );
 
-  return isEditAllowed
-}; 
+  return isEditAllowed;
+};
 
 module.exports = {
-    ValidateSignupData,
-    validateEditProfileData
+  ValidateSignupData,
+  validateEditProfileData
 };

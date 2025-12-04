@@ -25,9 +25,10 @@ const Connections = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredConnections = connections.filter((connection) => {
+    if (!connection) return false;
     const name = connection.firstName
       ? `${connection.firstName} ${connection.lastName}`
-      : connection.name;
+      : connection.name || "Unknown User";
     return name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -249,6 +250,7 @@ const Connections = () => {
               <div className="h-[400px] overflow-y-auto p-4 space-y-4 custom-scrollbar">
                 {requests.map((request) => {
                   const user = request.fromUserId;
+                  if (!user) return null; // Skip if user data is missing
                   return (
                     <div
                       key={request._id}
@@ -262,13 +264,16 @@ const Connections = () => {
                               user.profilePicture ||
                               "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                             }
-                            alt={user.firstName}
+                            alt={user.firstName || user.name || "User"}
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 text-sm">
-                            {user.name}
+                            {user.name ||
+                              (user.firstName
+                                ? `${user.firstName} ${user.lastName || ""}`
+                                : "Unknown User")}
                           </h3>
                           <p className="text-xs text-gray-500 truncate">
                             {user.about || "No bio available"}

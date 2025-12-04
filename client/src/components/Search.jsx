@@ -351,7 +351,12 @@ const Search = () => {
                       user.profilePicture ||
                       "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
                     }
-                    alt={user.firstName || user.name}
+                    alt={
+                      user.name ||
+                      (user.firstName
+                        ? `${user.firstName} ${user.lastName || ""}`
+                        : "User")
+                    }
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -389,8 +394,10 @@ const Search = () => {
                 <div className="p-5">
                   <div className="mb-3">
                     <h3 className="text-lg font-bold text-gray-900 mb-1">
-                      {user.firstName || user.name}{" "}
-                      {user.lastName && user.lastName}
+                      {user.name ||
+                        (user.firstName
+                          ? `${user.firstName} ${user.lastName || ""}`
+                          : "Unknown User")}
                     </h3>
                     <p className="text-sm text-gray-500 flex items-center gap-2">
                       {user.age && (
@@ -404,7 +411,15 @@ const Search = () => {
                           <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                         </>
                       )}
-                      <span className={user.gender == "male" || user.gender == "Male" ? "text-blue-500 font-bold" : "text-red-500 font-bold"}>{user.gender || "Not specified"}</span>
+                      <span
+                        className={
+                          user.gender == "male" || user.gender == "Male"
+                            ? "text-blue-500 font-bold"
+                            : "text-red-500 font-bold"
+                        }
+                      >
+                        {user.gender || "Not specified"}
+                      </span>
                     </p>
                   </div>
 

@@ -172,7 +172,7 @@ const NavBar = () => {
                   </div>
                   <div className="hidden md:block text-left relative z-10">
                     <p className="text-sm font-medium text-red-500">
-                      {user.name}
+                      {user.name || "User"}
                     </p>
                   </div>
                 </button>
@@ -190,12 +190,12 @@ const NavBar = () => {
                 {/* Profile Menu */}
                 <div
                   className={`absolute right-0 mt-2 w-64 z-50 origin-top-right transition-all duration-300 
-                    ${
-                      isProfileOpen
-                        ? "opacity-100 visible translate-y-0"
-                        : "opacity-0 invisible -translate-y-2"
-                    } 
-                    md:opacity-0 md:invisible md:-translate-y-2 md:group-hover:opacity-100 md:group-hover:visible md:group-hover:translate-y-0`}
+                      ${
+                        isProfileOpen
+                          ? "opacity-100 visible translate-y-0"
+                          : "opacity-0 invisible -translate-y-2"
+                      } 
+                      md:opacity-0 md:invisible md:-translate-y-2 md:group-hover:opacity-100 md:group-hover:visible md:group-hover:translate-y-0`}
                 >
                   <div
                     className="rounded-2xl overflow-hidden mx-4 md:mx-0"
@@ -209,7 +209,7 @@ const NavBar = () => {
                   >
                     <div className="px-6 py-4 border-b border-gray-100">
                       <p className="text-sm font-bold text-red-500">
-                        {user.firstName || user.name}
+                        {user.firstName || user.name || "User"}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {user.email}

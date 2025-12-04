@@ -166,4 +166,42 @@ requestRouter.get("/user/connections", userAuth, async (req, res) => {
   }
 });
 
+// Remove connection
+requestRouter.delete("/request/remove/:userId", userAuth, async (req, res) => {
+  try {
+    const loggedInUserId = req.user._id;
+    const targetUserId = req.params.userId;
+
+    // 1. Find and delete the connection request
+    const connection = await ConnectionRequest.findOneAndDelete({
+      $or: [
+        { fromUserId: loggedInUserId, toUserId: targetUserId, status: "accepted" },
+        { fromUserId: targetUserId, toUserId: loggedInUserId, status: "accepted" },
+      ],
+    });
+
+    if (!connection) {
+      return res.status(404).json({ message: "Connection not found" });
+    }
+
+    // 2. Find the chat between these users
+    const Chat = require("../models/chat");
+    const Message = require("../models/message");
+
+    const chat = await Chat.findOne({
+      participants: { $all: [loggedInUserId, targetUserId] },
+    });
+
+    if (chat) {
+      // 3. Delete the chat and its messages
+      await Chat.findByIdAndDelete(chat._id);
+      await Message.deleteMany({ chatId: chat._id });
+    }
+
+    res.json({ message: "Connection and chat history removed successfully" });
+  } catch (err) {
+    res.status(400).send("ERROR: " + err.message);
+  }
+});
+
 module.exports = requestRouter;

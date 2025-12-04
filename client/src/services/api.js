@@ -46,6 +46,14 @@ export const authAPI = {
       localStorage.removeItem('token');
     }
   },
+
+  deleteProfile: async () => {
+    try {
+      await api.delete('/profile/delete');
+    } finally {
+      localStorage.removeItem('token');
+    }
+  },
 };
 
 export default api;

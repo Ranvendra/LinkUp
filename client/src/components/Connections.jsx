@@ -9,8 +9,11 @@ import {
   MessageSquareText,
   MapPin,
   Briefcase,
+  Search,
   UserPlus,
+  UserMinus,
 } from "lucide-react";
+import Toast from "./Toast";
 
 const Connections = () => {
   const user = useSelector((store) => store.user);
@@ -18,6 +21,15 @@ const Connections = () => {
   const [requests, setRequests] = useState([]);
   const [connections, setConnections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredConnections = connections.filter((connection) => {
+    const name = connection.firstName
+      ? `${connection.firstName} ${connection.lastName}`
+      : connection.name;
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
 
   const fetchData = async () => {
     try {
@@ -60,6 +72,17 @@ const Connections = () => {
     navigate("/chat", { state: { targetUserId: targetUser._id } });
   };
 
+  const removeConnection = async (userId) => {
+    try {
+      await api.delete(`/request/remove/${userId}`);
+      setConnections((prev) => prev.filter((c) => c._id !== userId));
+      setToast({ message: "Connection removed successfully", type: "success" });
+    } catch (err) {
+      console.error(err);
+      setToast({ message: "Failed to remove connection", type: "error" });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center items-center h-96">
@@ -88,7 +111,7 @@ const Connections = () => {
         </div>
         <div>
           <h1 className="text-2xl font-bold text-blue-500 mb-1 font-pacifico">
-             {user?.name}
+            {user?.name}
           </h1>
           <p className="text-gray-500 font-medium mb-3">{user?.headline}</p>
           <div className="flex gap-6 text-sm">
@@ -117,55 +140,90 @@ const Connections = () => {
             </span>
           </div>
 
-          {connections.length === 0 ? (
+          {/* Search Bar */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search connections..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-400 transition-all"
+              />
+            </div>
+            <button className="px-6 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors shadow-sm flex items-center gap-2">
+              <Search className="w-5 h-5" />
+              <span className="hidden sm:inline">Search</span>
+            </button>
+          </div>
+
+          {filteredConnections.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-50 flex items-center justify-center">
                 <UserPlus className="w-8 h-8 text-gray-400" strokeWidth={3} />
               </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                No connections yet
+                {searchQuery ? "No matching connections" : "No connections yet"}
               </h3>
               <p className="text-gray-500">
-                Start connecting with people to build your network!
+                {searchQuery
+                  ? "Try searching for a different name"
+                  : "Start connecting with people to build your network!"}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {connections.map((connection) => (
-                <div
-                  key={connection._id}
-                  className="bg-white p-4 rounded-xl border border-gray-200 hover:shadow-md transition-all flex items-center gap-4 group"
-                >
-                  <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                    <img
-                      src={
-                        
-                        connection.profilePicture ||
-                        "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                      }
-                      alt={connection.firstName}
-                      className="w-full h-full object-cover"
-                    />
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="h-[400px] overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                {filteredConnections.map((connection) => (
+                  <div
+                    key={connection._id}
+                    className="bg-white p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:shadow-md transition-all flex items-center gap-4 group"
+                  >
+                    <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-100">
+                      <img
+                        src={
+                          connection.profilePicture ||
+                          "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                        }
+                        alt={connection.firstName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h3 className="font-bold text-gray-900 truncate text-lg">
+                            {connection.firstName
+                              ? `${connection.firstName} ${connection.lastName}`
+                              : connection.name}
+                          </h3>
+                          <p className="text-sm text-gray-500 truncate mb-2 max-w-[200px] sm:max-w-xs">
+                            {connection.about || "No bio available"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-3 mt-1">
+                        <button
+                          onClick={() => handleMessage(connection)}
+                          className="flex-1 py-2 bg-[#8eff5a]/10 text-[#019b18] hover:bg-[#00c917] hover:text-white rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 border border-[#8eff5a]/30"
+                        >
+                          <MessageSquareText className="w-4 h-4" />
+                          Message
+                        </button>
+                        <button
+                          onClick={() => removeConnection(connection._id)}
+                          className="px-4 py-2 bg-red-50 text-red-500 hover:bg-red-500 hover:text-white rounded-lg flex items-center justify-center transition-all border border-red-100"
+                          title="Remove Connection"
+                        >
+                          <UserMinus className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 truncate">
-                      {connection.firstName
-                        ? `${connection.firstName} ${connection.lastName}`
-                        : connection.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 truncate mb-2">
-                      {connection.about || "No bio available"}
-                    </p>
-                    <button
-                      onClick={() => handleMessage(connection)}
-                      className="w-1/2 py-2 bg-[#8eff5a]/30 text-[#019b18] hover:bg-[#00c917] hover:text-white hover:scale-[0.96] hover:shadow-amber-700 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
-                    >
-                      <MessageSquareText className="w-4 h-4" />
-                      Message
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
         </div>
@@ -174,7 +232,7 @@ const Connections = () => {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold font-pacifico text-red-500 flex items-center gap-2">
-              <BellDot className="w-6 h-6 text-red-600" strokeWidth={3}/>
+              <BellDot className="w-6 h-6 text-red-600" strokeWidth={3} />
               Invitations
             </h2>
             <span className="px-3 py-1 bg-[#FFF5F3] text-[#FF6B5A] rounded-full text-sm font-medium">
@@ -187,56 +245,65 @@ const Connections = () => {
               <p className="text-gray-500 text-sm">No pending invitations</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {requests.map((request) => {
-                const user = request.fromUserId;
-                return (
-                  <div
-                    key={request._id}
-                    className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
-                  >
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                        <img
-                          src={
-                            user.photoUrl ||
-                            user.profilePicture ||
-                            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                          }
-                          alt={user.firstName}
-                          className="w-full h-full object-cover"
-                        />
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+              <div className="h-[400px] overflow-y-auto p-4 space-y-4 custom-scrollbar">
+                {requests.map((request) => {
+                  const user = request.fromUserId;
+                  return (
+                    <div
+                      key={request._id}
+                      className="bg-white p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:shadow-sm transition-all"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
+                          <img
+                            src={
+                              user.photoUrl ||
+                              user.profilePicture ||
+                              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                            }
+                            alt={user.firstName}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-gray-900 text-sm">
+                            {user.firstName} {user.lastName}
+                          </h3>
+                          <p className="text-xs text-gray-500 truncate">
+                            {user.about || "No bio available"}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-gray-900 text-sm">
-                          {user.firstName} {user.lastName}
-                        </h3>
-                        <p className="text-xs text-gray-500 truncate">
-                          {user.about || "No bio available"}
-                        </p>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => reviewRequest("rejected", request._id)}
+                          className="flex-1 py-2 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          Ignore
+                        </button>
+                        <button
+                          onClick={() => reviewRequest("accepted", request._id)}
+                          className="flex-1 py-2 text-sm font-medium text-white bg-[#FF6B5A] hover:bg-[#E85545] rounded-lg transition-colors shadow-sm"
+                        >
+                          Accept
+                        </button>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => reviewRequest("rejected", request._id)}
-                        className="flex-1 py-2 text-sm font-medium text-gray-600 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-                      >
-                        Ignore
-                      </button>
-                      <button
-                        onClick={() => reviewRequest("accepted", request._id)}
-                        className="flex-1 py-2 text-sm font-medium text-white bg-[#FF6B5A] hover:bg-[#E85545] rounded-lg transition-colors shadow-sm"
-                      >
-                        Accept
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
       </div>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };

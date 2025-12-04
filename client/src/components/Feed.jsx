@@ -73,16 +73,16 @@ const Feed = () => {
   const currentUser = feed[0];
 
   return (
-    <div className="animate-fadeIn">
+    <div className="animate-fadeIn flex flex-col h-[calc(100vh-100px)]">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4 shrink-0">
         <h1 className="text-3xl font-bold text-gray-900 mb-1 mt-5">Discover</h1>
         <p className="text-gray-500">Swipe to connect with amazing people</p>
       </div>
 
       {/* Tinder-style Card Stack */}
-      <div className="flex justify-center items-center]">
-        <div className="relative w-full max-w-md">
+      <div className="flex-1 flex justify-center items-center min-h-0 w-full">
+        <div className="relative w-full max-w-sm md:max-w-md aspect-[3/4] max-h-full">
           {/* Card Stack - Show up to 3 cards with offset */}
           {feed.slice(0, 3).map((user, index) => (
             <div
@@ -100,9 +100,9 @@ const Feed = () => {
                 }px)`,
               }}
             >
-              <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-2xl">
+              <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-2xl h-full flex flex-col">
                 {/* Image */}
-                <div className="relative aspect-49/50 overflow-hidden bg-gray-100">
+                <div className="relative flex-1 overflow-hidden bg-gray-100">
                   <img
                     src={
                       user.photoUrl ||
@@ -112,7 +112,7 @@ const Feed = () => {
                     alt={user.firstName || user.name}
                     className="w-full h-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
 
                   {/* User Info Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
@@ -151,18 +151,18 @@ const Feed = () => {
 
                 {/* Action Buttons - Only on front card */}
                 {index === 0 && (
-                  <div className="p-6 flex gap-10 justify-center bg-white">
+                  <div className="p-4 flex gap-8 justify-center bg-white shrink-0">
                     <button
                       onClick={() => sendRequest("ignored", user._id)}
-                      className="w-18 h-18 bg-white border-2 border-gray-300 text-gray-600 rounded-full hover:bg-gray-50 transition-all flex items-center justify-center shadow-lg hover:scale-[0.96]"
+                      className="w-16 h-16 bg-white border-2 border-gray-200 text-gray-500 rounded-full hover:bg-gray-50 transition-all flex items-center justify-center shadow-lg hover:scale-105 hover:border-gray-300"
                     >
-                      <TicketX className="w-10 h-10" />
+                      <TicketX className="w-8 h-8" />
                     </button>
                     <button
                       onClick={() => sendRequest("interested", user._id)}
-                      className="w-18 h-18 border-3 bg-[#fd1c6f] text-white rounded-full hover:bg-[#ff2264] hover:shadow-[#FF6B5A]/80 transition-all flex items-center justify-center shadow-2xl shadow-[#FF6B5A]/40 hover:scale-[0.96]"
+                      className="w-16 h-16 bg-[#FD1C6F] text-white rounded-full hover:bg-[#e90659] transition-all flex items-center justify-center shadow-lg shadow-[#FF6B5A]/30 hover:scale-105"
                     >
-                      <HeartPlus className="w-12 h-12" />
+                      <HeartPlus className="w-8 h-8" />
                     </button>
                   </div>
                 )}
@@ -172,21 +172,19 @@ const Feed = () => {
 
           {/* Placeholder for card height */}
           <div className="opacity-0 pointer-events-none">
-            <div className="bg-white rounded-3xl overflow-hidden">
+            <div className="bg-white rounded-3xl overflow-hidden h-full">
               <div className="aspect-3/4"></div>
-              <div className="p-6 flex gap-4 justify-center">
-                <div className="w-16 h-16"></div>
-                <div className="w-20 h-20"></div>
-              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Users Remaining Indicator */}
-      <div className="fixed bottom-5 w-20/25 flex justify-center items-center">
-        <p className="text-2xl text-[#fe103f] font-pacifico">
-          <span className="text-5xl text-[#216fff]">{feed.length}</span> <span className="px-1"></span> {feed.length === 1 ? "Person" : "People"} To Discover
+      <div className="py-2 flex justify-center items-center shrink-0">
+        <p className="text-xl text-gray-400 font-medium font-pacifico">
+          <span className="text-3xl text-[#FD1C6F]">{feed.length}</span>{" "}
+          <span className="px-1"></span>{" "}
+          {feed.length === 1 ? "Person" : "People"} To Discover
         </p>
       </div>
     </div>

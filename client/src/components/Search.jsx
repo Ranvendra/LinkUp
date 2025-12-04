@@ -28,26 +28,43 @@ const Search = () => {
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [requestedUsers, setRequestedUsers] = useState(new Set());
 
+  const [abortController, setAbortController] = useState(null);
+
   const fetchUsers = async () => {
-    if (loading) return;
+    // Cancel previous request if it exists
+    if (abortController) {
+      abortController.abort();
+    }
+    const newController = new AbortController();
+    setAbortController(newController);
+
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
         page,
-        limit: 12,
+        limit: 8,
         search: searchQuery,
         sort: sortOrder,
         ...filters,
       }).toString();
 
-      const res = await api.get(`/search?${queryParams}`);
+      const res = await api.get(`/search?${queryParams}`, {
+        signal: newController.signal,
+      });
 
       setUsers(res.data.data || []);
       setTotalPages(res.data.totalPages || 1);
     } catch (err) {
+      if (err.name === "CanceledError" || err.code === "ERR_CANCELED") {
+        console.log("Request canceled");
+        return;
+      }
       console.error(err);
     } finally {
-      setLoading(false);
+      // Only set loading to false if this is the current request
+      if (!newController.signal.aborted) {
+        setLoading(false);
+      }
     }
   };
 
@@ -72,28 +89,53 @@ const Search = () => {
 
   const renderPageNumbers = () => {
     const pages = [];
-    const maxVisible = 5;
-    let startPage = Math.max(1, page - Math.floor(maxVisible / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
 
-    if (endPage - startPage < maxVisible - 1) {
-      startPage = Math.max(1, endPage - maxVisible + 1);
-    }
+    const renderButton = (i) => (
+      <button
+        key={i}
+        onClick={() => setPage(i)}
+        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+          page === i
+            ? "bg-[#FF6B5A] text-white shadow-lg shadow-[#FF6B5A]/30"
+            : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
+        }`}
+      >
+        {i}
+      </button>
+    );
 
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(
-        <button
-          key={i}
-          onClick={() => setPage(i)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-            page === i
-              ? "bg-[#FF6B5A] text-white shadow-lg shadow-[#FF6B5A]/30"
-              : "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50"
-          }`}
-        >
-          {i}
-        </button>
-      );
+    const renderDots = (key) => (
+      <span key={key} className="px-2 text-gray-400 self-center">
+        ...
+      </span>
+    );
+
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(renderButton(i));
+      }
+    } else {
+      if (page <= 4) {
+        for (let i = 1; i <= 5; i++) {
+          pages.push(renderButton(i));
+        }
+        pages.push(renderDots("dots-end"));
+        pages.push(renderButton(totalPages));
+      } else if (page >= totalPages - 3) {
+        pages.push(renderButton(1));
+        pages.push(renderDots("dots-start"));
+        for (let i = totalPages - 4; i <= totalPages; i++) {
+          pages.push(renderButton(i));
+        }
+      } else {
+        pages.push(renderButton(1));
+        pages.push(renderDots("dots-start"));
+        for (let i = page - 1; i <= page + 1; i++) {
+          pages.push(renderButton(i));
+        }
+        pages.push(renderDots("dots-end"));
+        pages.push(renderButton(totalPages));
+      }
     }
 
     return pages;
@@ -349,10 +391,20 @@ const Search = () => {
                     <h3 className="text-lg font-bold text-gray-900 mb-1">
                       {user.firstName || user.name}{" "}
                       {user.lastName && user.lastName}
-                      {user.age && `, ${user.age}`}
                     </h3>
-                    <p className="text-sm text-gray-500">
-                      {user.gender || "Not specified"}
+                    <p className="text-sm text-gray-500 flex items-center gap-2">
+                      {user.age && (
+                        <>
+                          <span>
+                            <span className="font-semibold text-gray-700">
+                              age:
+                            </span>{" "}
+                            {user.age}
+                          </span>
+                          <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                        </>
+                      )}
+                      <span className={user.gender == "male" || user.gender == "Male" ? "text-blue-500 font-bold" : "text-red-500 font-bold"}>{user.gender || "Not specified"}</span>
                     </p>
                   </div>
 

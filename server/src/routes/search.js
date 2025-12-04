@@ -9,7 +9,7 @@ searchRouter.get("/search", userAuth, async (req, res) => {
         const loggedInUser = req.user;
 
         const page = parseInt(req.query.page) || 1;
-        let limit = parseInt(req.query.limit) || 12;
+        let limit = parseInt(req.query.limit) || 8;
         limit = limit > 50 ? 50 : limit;
         const skip = (page - 1) * limit;
 
@@ -88,9 +88,9 @@ searchRouter.get("/search", userAuth, async (req, res) => {
         const sort = {};
         if (req.query.sort) {
             if (req.query.sort === "asc") {
-                sort.firstName = 1;
+                sort.name = 1;
             } else if (req.query.sort === "desc") {
-                sort.firstName = -1;
+                sort.name = -1;
             }
         } else {
             sort.createdAt = -1;
@@ -103,7 +103,8 @@ searchRouter.get("/search", userAuth, async (req, res) => {
             .select("name firstName lastName photoUrl profilePicture age gender about interests dateOfBirth")
             .skip(skip)
             .limit(limit)
-            .sort(sort);
+            .sort(sort)
+            .collation({ locale: "en", strength: 2, numericOrdering: true });
 
         // Fetch all connection requests involving logged-in user
         const connectionRequests = await ConnectionRequest.find({
@@ -140,6 +141,18 @@ searchRouter.get("/search", userAuth, async (req, res) => {
             } else {
                 // For 'ignored' or 'rejected', treat as 'none' so they can reconnect
                 userObj.connectionStatus = 'none';
+            }
+
+            // Calculate age if dateOfBirth exists
+            if (userObj.dateOfBirth) {
+                const dob = new Date(userObj.dateOfBirth);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                userObj.age = age;
             }
 
             return userObj;

@@ -50,6 +50,8 @@ const userSchema = new mongoose.Schema(
         }
       },
       trim: true,
+      minLength: 4,
+      maxLength: 6
     },
     profilePicture: {
       type: String,

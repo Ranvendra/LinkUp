@@ -1,6 +1,6 @@
 # Linkup – Developer Connection Platform 🚀
 
-![Linkup Banner](https://via.placeholder.com/1200x300?text=Linkup+-+Connect+with+Developers)
+![Linkup Banner]([https://via.placeholder.com/1200x300?text=Linkup+-+Connect+with+Developers](https://linkupweb.vercel.app/icon.webp))
 
 ## 1. About the Project
 
@@ -42,8 +42,7 @@ In the vast world of software development, finding peers with similar interests 
 
 The application follows a standard **MERN Stack** architecture:
 
-```mermaid
-graph LR
+```
     A[Frontend (React)] <-->|REST API| B[Backend API (Node/Express)]
     B <-->|Mongoose| C[(MongoDB Atlas)]
     A <-->|Socket.io| B
@@ -53,7 +52,7 @@ graph LR
 
 ### User Model
 
-- **Basic Info**: `firstName`, `lastName`, `email`, `password`, `age`, `gender`.
+- **Basic Info**: `name`, `email`, `password`, `age`, `gender`.
 - **Profile**: `photoUrl`, `about`, `skills` (Array of Strings).
 
 ### Connection Request Model

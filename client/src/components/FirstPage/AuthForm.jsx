@@ -311,10 +311,10 @@ function AuthForms() {
             <button
               type="button"
               onClick={toggleMode}
-              className="flex items-center justify-center flex-3 px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg sm:rounded-xl text-md sm:text-md font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all"
+              className="flex items-center justify-center flex-3 px-3 sm:px-4 py-2 sm:py-3 border-2 border-amber-500 rounded-lg sm:rounded-xl text-md sm:text-md font-semibold text-gray-700 hover:bg-white hover:border-amber-400 transition-all"
             >
-              <img className="h-4 sm:h-5 pr-2" src={google} alt="Google" />
-              {isLogin ? "Google" : "Google"}
+              
+              {isLogin ? "Signup" : "Login"}
             </button>
 
             <button

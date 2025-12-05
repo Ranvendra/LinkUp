@@ -1,14 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const LazyImage = ({ src, alt, className = "", style = {}, ...props }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState(false);
+  const imgRef = useRef(null);
 
   useEffect(() => {
     // Reset states when src changes
     setIsLoaded(false);
     setError(false);
   }, [src]);
+
+  useEffect(() => {
+    // Check if image is already loaded from cache
+    if (imgRef.current && imgRef.current.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
 
   const handleLoad = () => {
     setIsLoaded(true);
@@ -29,6 +37,7 @@ const LazyImage = ({ src, alt, className = "", style = {}, ...props }) => {
       {/* Actual Image */}
       {!error ? (
         <img
+          ref={imgRef}
           src={src}
           alt={alt}
           loading={props.loading || "lazy"} // Default to lazy, allow override

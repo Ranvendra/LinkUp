@@ -90,10 +90,16 @@ authRouter.post("/login", async (req, res) => {
     });
 
     // Add the token to the cookie, and send it to the client with the response.
+    const isProduction =
+      process.env.NODE_ENV === "production" ||
+      (process.env.FRONTEND_URL &&
+        (process.env.FRONTEND_URL.includes("vercel.app") ||
+          process.env.FRONTEND_URL.includes("render.com")));
+
     res.cookie("LinkupToken", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
+      httpOnly: true, // Prevent client-side JS access
+      secure: isProduction, // Secure in production (HTTPS)
+      sameSite: isProduction ? "None" : "Lax", // None for cross-site in production
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 

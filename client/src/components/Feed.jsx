@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../store/feedSlice";
 import { HeartPlus, TicketX, Sparkles } from "lucide-react";
 import Toast from "./Toast";
+import LazyImage from "./LazyImage";
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -109,7 +110,7 @@ const Feed = () => {
               <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-2xl h-full flex flex-col">
                 {/* Image */}
                 <div className="relative flex-1 overflow-hidden bg-gray-100">
-                  <img
+                  <LazyImage
                     src={
                       user.photoUrl ||
                       user.profilePicture ||

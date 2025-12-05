@@ -14,6 +14,7 @@ import {
   UserMinus,
 } from "lucide-react";
 import Toast from "./Toast";
+import LazyImage from "./LazyImage";
 
 const Connections = () => {
   const user = useSelector((store) => store.user);
@@ -107,7 +108,7 @@ const Connections = () => {
       {/* Compact Profile Header */}
       <div className="bg-white rounded-2xl p-6 mb-8 flex items-center gap-6">
         <div className="w-20 h-20 rounded-full border-2 border-gray-100 shadow-sm overflow-hidden bg-gray-50 shrink-0">
-          <img
+          <LazyImage
             src={
               user?.photoUrl ||
               user?.profilePicture ||
@@ -189,7 +190,7 @@ const Connections = () => {
                     className="bg-white p-4 rounded-xl border border-gray-100 hover:border-red-100 hover:shadow-md transition-all flex items-center gap-4 group"
                   >
                     <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-100 shrink-0 border border-gray-100">
-                      <img
+                      <LazyImage
                         src={
                           connection.profilePicture ||
                           "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
@@ -265,7 +266,7 @@ const Connections = () => {
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 shrink-0">
-                          <img
+                          <LazyImage
                             src={
                               user.photoUrl ||
                               user.profilePicture ||

@@ -22,10 +22,17 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
+    console.log("Incoming Origin:", origin); // LOGGING ORIGIN
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    // Check if origin matches any allowed origin
+    const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed));
+
+    if (allowedOrigins.indexOf(origin) !== -1 || isAllowed) {
+      console.log("Origin allowed:", origin);
       callback(null, true);
     } else {
+      console.error("CORS Blocked for origin:", origin);
       callback(new Error("Not allowed by CORS"));
     }
   },

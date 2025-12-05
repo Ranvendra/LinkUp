@@ -16,6 +16,7 @@ import {
   Hash,
   Heart,
 } from "lucide-react";
+import LazyImage from "./LazyImage";
 
 const ChangePasswordModal = ({ onClose, onSuccess }) => {
   const [passwords, setPasswords] = useState({
@@ -296,7 +297,7 @@ const Profile = () => {
           <div className="absolute -bottom-16 left-8">
             <div className="relative group">
               <div className="w-32 h-32 rounded-2xl overflow-hidden bg-white border-4 border-white shadow-lg">
-                <img
+                <LazyImage
                   src={
                     formData.photoUrl ||
                     "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"

@@ -84,7 +84,7 @@ requestRouter.get(
         status: "interested",
       }).populate(
         "fromUserId",
-        "name firstName lastName photoUrl profilePicture about gender age"
+        "name photoUrl profilePicture about gender age"
       );
 
       const validRequests = connectionRequests.filter(
@@ -149,8 +149,8 @@ requestRouter.get("/user/connections", userAuth, async (req, res) => {
         { toUserId: loggedInUser._id, status: "accepted" },
       ],
     })
-      .populate("fromUserId", "name firstName lastName photoUrl profilePicture about gender age")
-      .populate("toUserId", "name firstName lastName photoUrl profilePicture about gender age");
+      .populate("fromUserId", "name photoUrl profilePicture about gender age")
+      .populate("toUserId", "name photoUrl profilePicture about gender age");
 
     // Transform to return just the connected users and filter out nulls
     const connectedUsers = connections
@@ -199,7 +199,7 @@ requestRouter.delete("/request/remove/:userId", userAuth, async (req, res) => {
     });
 
     if (chat) {
-      // 3. Delete the chat and its messages
+      // 3. Delete the chat and its messages (Only history is removed, NOT users)
       await Chat.findByIdAndDelete(chat._id);
       await Message.deleteMany({ chatId: chat._id });
     }

@@ -8,7 +8,7 @@ const run = async () => {
         const users = await User.find({});
         console.log("Checking users...");
         users.forEach(u => {
-            console.log(`ID: ${u._id}, Name: ${u.firstName} ${u.lastName}, Raw: ${JSON.stringify(u)}`);
+            console.log(`ID: ${u._id}, Name: ${u.name}, Email: ${u.email}`);
         });
 
         process.exit(0);

@@ -27,9 +27,7 @@ const Connections = () => {
 
   const filteredConnections = connections.filter((connection) => {
     if (!connection) return false;
-    const name = connection.firstName
-      ? `${connection.firstName} ${connection.lastName}`
-      : connection.name || "Unknown User";
+    const name = connection.name || "Unknown User";
     return name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
@@ -203,9 +201,7 @@ const Connections = () => {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="font-bold text-gray-900 truncate text-lg">
-                            {connection.firstName
-                              ? `${connection.firstName} ${connection.lastName}`
-                              : connection.name}
+                            {connection.name}
                           </h3>
                           <p className="text-sm text-gray-500 truncate mb-2 max-w-[200px] sm:max-w-xs">
                             {connection.about || "No bio available"}
@@ -278,10 +274,7 @@ const Connections = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-semibold text-gray-900 text-sm">
-                            {user.name ||
-                              (user.firstName
-                                ? `${user.firstName} ${user.lastName || ""}`
-                                : "Unknown User")}
+                            {user.name || "Unknown User"}
                           </h3>
                           <p className="text-xs text-gray-500 truncate">
                             {user.about || "No bio available"}

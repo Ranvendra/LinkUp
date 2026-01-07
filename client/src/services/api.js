@@ -8,7 +8,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // This allows cookies to be sent with requests
+  withCredentials: true,
+  credentials: 'include' // This allows cookies to be sent with requests
 });
 
 // Add a request interceptor to inject the token

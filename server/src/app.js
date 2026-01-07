@@ -30,7 +30,7 @@ const corsOptions = {
 
     if (allowedOrigins.indexOf(origin) !== -1 || isAllowed) {
       console.log("Origin allowed:", origin);
-      callback(null, true);
+      callback(null, origin);
     } else {
       console.error("CORS Blocked for origin:", origin);
       callback(new Error("Not allowed by CORS"));

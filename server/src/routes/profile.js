@@ -72,7 +72,7 @@ profileRouter.delete("/profile/delete", userAuth, async (req, res) => {
   try {
     const user = req.user;
     await user.deleteOne();
-    res.cookie("token", null, {
+    res.cookie("LinkupToken", null, {
       expires: new Date(Date.now()),
     });
     res.json({ message: "User deleted successfully" });

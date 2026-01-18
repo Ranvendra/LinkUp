@@ -21,21 +21,7 @@ const allowedOrigins = [
 ].filter(Boolean);
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    console.log("Incoming Origin:", origin); // LOGGING ORIGIN
-    if (!origin) return callback(null, true);
-
-    // Check if origin matches any allowed origin
-    const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed));
-
-    if (allowedOrigins.indexOf(origin) !== -1 || isAllowed) {
-      console.log("Origin allowed:", origin);
-      callback(null, origin);
-    } else {
-      console.error("CORS Blocked for origin:", origin);
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

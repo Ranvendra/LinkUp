@@ -8,23 +8,8 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
-  credentials: 'include' // This allows cookies to be sent with requests
+  withCredentials: true, // This allows cookies to be sent with requests and is the Axios equivalent of credentials: 'include'
 });
-
-// Add a request interceptor to inject the token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 // Auth API calls
 export const authAPI = {
@@ -34,26 +19,17 @@ export const authAPI = {
 
   login: async (credentials) => {
     const response = await api.post('/login', credentials);
-    if (response.data.token) {
-      localStorage.setItem('token', response.data.token);
-    }
+    // Token is now handled automatically via HttpOnly Cookie set by the server
     return response;
   },
 
   logout: async () => {
-    try {
-      await api.post('/logout');
-    } finally {
-      localStorage.removeItem('token');
-    }
+    // Session is cleared by the server clearing the cookie
+    return await api.post('/logout');
   },
 
   deleteProfile: async () => {
-    try {
-      await api.delete('/profile/delete');
-    } finally {
-      localStorage.removeItem('token');
-    }
+    return await api.delete('/profile/delete');
   },
 };
 

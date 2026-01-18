@@ -124,7 +124,19 @@ authRouter.post("/login", async (req, res) => {
 // Logout api
 authRouter.post("/logout", async (req, res) => {
   try {
-    res.clearCookie("LinkupToken");
+    const isProduction =
+      process.env.NODE_ENV === "production" ||
+      (process.env.FRONTEND_URL &&
+        (process.env.FRONTEND_URL.includes("vercel.app") ||
+          process.env.FRONTEND_URL.includes("render.com")));
+
+    res.cookie("LinkupToken", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "None" : "Lax",
+    });
+
     return res.status(200).json({
       success: true,
       message: "Logged out successfully.",

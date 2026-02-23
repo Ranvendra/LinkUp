@@ -1,6 +1,10 @@
 import axios from 'axios';
 
-export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:7777';
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || (window.location.hostname === 'localhost' ? 'http://localhost:7777' : '');
+
+if (!import.meta.env.VITE_BACKEND_URL && window.location.hostname !== 'localhost') {
+  console.error("VITE_BACKEND_URL is not set in production. Requests will likely fail. Please set it in your hosting platform environment variables.");
+}
 
 // Create axios instance with default config
 const api = axios.create({

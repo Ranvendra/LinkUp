@@ -90,16 +90,12 @@ authRouter.post("/login", async (req, res) => {
     });
 
     // Add the token to the cookie, and send it to the client with the response.
-    const isProduction =
-      process.env.NODE_ENV === "production" ||
-      (process.env.FRONTEND_URL &&
-        (process.env.FRONTEND_URL.includes("vercel.app") ||
-          process.env.FRONTEND_URL.includes("render.com")));
+    const isProduction = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https://");
 
     res.cookie("LinkupToken", token, {
       httpOnly: true, // Prevent client-side JS access
       secure: isProduction, // Secure in production (HTTPS)
-      sameSite: isProduction ? "None" : "Lax", // None for cross-site in production
+      sameSite: isProduction ? "none" : "lax", // None for cross-site in production (must be lowercase 'none')
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -124,17 +120,13 @@ authRouter.post("/login", async (req, res) => {
 // Logout api
 authRouter.post("/logout", async (req, res) => {
   try {
-    const isProduction =
-      process.env.NODE_ENV === "production" ||
-      (process.env.FRONTEND_URL &&
-        (process.env.FRONTEND_URL.includes("vercel.app") ||
-          process.env.FRONTEND_URL.includes("render.com")));
+    const isProduction = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https://");
 
     res.cookie("LinkupToken", null, {
       expires: new Date(Date.now()),
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
+      sameSite: isProduction ? "none" : "lax",
     });
 
     return res.status(200).json({

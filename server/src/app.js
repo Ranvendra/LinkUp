@@ -12,19 +12,30 @@ const Chat = require("./models/chat");
 
 const PORT = process.env.PORT || 7777;
 
-// CoRS ConfFIGUuration
+// Clean up trailing slashes from environment variables
+const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, "") : null;
+
+// CORS Configuration
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "https://linkupweb.vercel.app",
-  process.env.FRONTEND_URL,
+  frontendUrl,
 ].filter(Boolean);
 
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: function (origin, callback) {
+    // Check if the origin is in the allowed list or if it's a server-to-server request (no origin)
+    // In development (localhost), sometimes origin might be undefined for non-browser tools like Postman
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"],
 };
 
 app.use(cors(corsOptions));

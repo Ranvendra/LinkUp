@@ -11,7 +11,6 @@ const { ValidateSignupData } = require("../utils/validation");
 // Signup aPI
 
 authRouter.post("/signup", ValidateSignupData, async (req, res) => {
-  await User.syncIndexes();
 
   const { name, dateOfBirth, email, password } = req.body;
   // hashing
@@ -90,7 +89,8 @@ authRouter.post("/login", async (req, res) => {
     });
 
     // Add the token to the cookie, and send it to the client with the response.
-    const isProduction = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https://");
+    const origin = req.headers.origin || "";
+    const isProduction = process.env.NODE_ENV === "production" || origin.startsWith("https://");
 
     res.cookie("LinkupToken", token, {
       httpOnly: true, // Prevent client-side JS access
@@ -120,7 +120,8 @@ authRouter.post("/login", async (req, res) => {
 // Logout api
 authRouter.post("/logout", async (req, res) => {
   try {
-    const isProduction = process.env.NODE_ENV === "production" || process.env.FRONTEND_URL?.startsWith("https://");
+    const origin = req.headers.origin || "";
+    const isProduction = process.env.NODE_ENV === "production" || origin.startsWith("https://");
 
     res.cookie("LinkupToken", null, {
       expires: new Date(Date.now()),

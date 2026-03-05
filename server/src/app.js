@@ -60,24 +60,7 @@ app.use("/", chatRouter);
 app.use("/", feedRouter);
 app.use("/", searchRouter);
 
-// Testing purpose for server running.
-app.get("/test", async (req, res) => {
-  try {
-    res.json({ Message: "Hello!, Welcome to the world of Backend." });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
-app.get("/", async (req, res) => {
-  try {
-    res.json({
-      Note: "It's Ranvendra Pratap Singh's Server. You are noticed to stay away from this",
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
 
 const server = http.createServer(app);
 const io = new Server(server, {

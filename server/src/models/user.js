@@ -60,7 +60,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
       validator(value) {
         if (!validator.isURL(value)) {
-          throw new error(`${value} is not a valid URL.`);
+          throw new Error(`${value} is not a valid URL.`);
         }
       },
     },

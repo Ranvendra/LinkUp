@@ -67,19 +67,6 @@ chatRouter.post("/chat/:targetUserId", userAuth, async (req, res) => {
         const { targetUserId } = req.params;
         const userId = req.user._id;
 
-        // Check if users are connected
-        const ConnectionRequest = require("../models/connectionRequest");
-        const connection = await ConnectionRequest.findOne({
-            $or: [
-                { fromUserId: userId, toUserId: targetUserId, status: "accepted" },
-                { fromUserId: targetUserId, toUserId: userId, status: "accepted" },
-            ],
-        });
-
-        if (!connection) {
-            return res.status(403).json({ message: "You can only chat with your connections" });
-        }
-
         let chat = await Chat.findOne({
             participants: { $all: [userId, targetUserId] },
         });

@@ -97,7 +97,7 @@ feedRouter.get("/feed", userAuth, async (req, res) => {
             hideUsersFromFeed.add(req.toUserId.toString());
         });
 
-        filter._id = { $nin: Array.from(hideUsersFromFeed).concat(loggedInUser._id) };
+        filter._id = { $nin: Array.from(hideUsersFromFeed).concat(loggedInUser._id.toString()) };
 
 
         // Sorting

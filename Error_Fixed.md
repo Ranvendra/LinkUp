@@ -169,3 +169,59 @@ if (!connection) {
 // New Code
 // We completely deleted the code above! Now it just skips straight to opening the chat.
 ```
+
+---
+
+## 6. The "Chat Fails to Update" Bug (Real-Time Syncing)
+
+### What was happening?
+
+When you sent a message to another user, your message bubble didn't show up on the screen right away. You had to manually refresh the whole page just to see your own message! Similarly, when you clicked "Message" on someone from the Search page, their chat history wouldn't load automatically.
+
+### Why did this happen?
+
+**1. Sender Waiting on Server:** When you clicked "Send", the frontend told the backend server to deliver the message (via Socket.io), but the frontend didn't update its _own_ local list of messages on the screen. It waited for a hard refresh.
+**2. Missing Avatar Info:** The backend server successfully broadcasted the message to the receiver, but it forgot to attach the new `profilePicture` data in the broadcast payload, making the sender's avatar invisible on the receiver's end.
+
+### How we fixed it:
+
+We used an "Optimistic UI Update". Now, the moment you click "Send", the frontend instantly draws your message bubble on the screen (optimistically assuming it sent fine) using your locally stored user data layout, while the backend syncs the official timestamps behind the scenes. We also updated the backend to correctly attach the `profilePicture` field during the socket broadcast.
+
+**Code Changed (`client/src/components/Chat/Chat.jsx` & `server/src/app.js`):**
+
+```javascript
+// Frontend: Optimistic Update Added
+const optimisticMsg = {
+  _id: `temp-${Date.now()}`,
+  chatId: activeChat._id,
+  sender: {
+    _id: user._id,
+    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    photoUrl: user.photoUrl || user.profilePicture,
+    profilePicture: user.profilePicture || user.photoUrl,
+  },
+  content: newMessage,
+  createdAt: new Date().toISOString(),
+};
+
+// We instantly push this temporary message to the screen!
+setMessages((prev) => [...prev, optimisticMsg]);
+```
+
+```javascript
+// Backend: Old Code (Did not include profilePicture)
+const populatedMessage = await newMessage.populate(
+  "sender",
+  "name firstName lastName photoUrl",
+);
+
+// Backend: New Code (Now includes profilePicture)
+const populatedMessage = await newMessage.populate(
+  "sender",
+  "name firstName lastName photoUrl profilePicture",
+);
+// We broadcast the message to both participants with the full avatar included!
+io.to(chatId).emit("messageReceived", populatedMessage);
+```

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import api from "../services/api";
+import api from "../../services/api";
 import { useDispatch, useSelector } from "react-redux";
-import { addFeed } from "../store/feedSlice";
-import { HeartPlus, TicketX, Sparkles } from "lucide-react";
-import Toast from "./Toast";
-import LazyImage from "./LazyImage";
+import { addFeed } from "../../store/feedSlice";
+import { ImagePlus, Send, MessageCircle, Heart, X, Trash2 } from "lucide-react";
+import Toast from "../Shared/Toast";
+import LazyImage from "../Shared/LazyImage";
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -98,8 +98,8 @@ const Feed = () => {
                 index === 0
                   ? "z-30 scale-100 opacity-100"
                   : index === 1
-                  ? "z-20 scale-95 opacity-70 translate-y-2"
-                  : "z-10 scale-90 opacity-40 translate-y-4"
+                    ? "z-20 scale-95 opacity-70 translate-y-2"
+                    : "z-10 scale-90 opacity-40 translate-y-4"
               }`}
               style={{
                 transform: `scale(${1 - index * 0.05}) translateY(${

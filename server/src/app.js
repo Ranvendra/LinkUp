@@ -92,7 +92,7 @@ io.on("connection", (socket) => {
 
       const populatedMessage = await newMessage.populate(
         "sender",
-        "name firstName lastName photoUrl"
+        "name firstName lastName photoUrl profilePicture"
       );
 
       io.to(chatId).emit("messageReceived", populatedMessage);

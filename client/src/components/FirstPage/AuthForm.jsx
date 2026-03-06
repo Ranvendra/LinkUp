@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Mail, User, Lock, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
-import Toast from "../Toast";
+import Toast from "../Shared/Toast";
 import google from "/google.webp";
 
 function AuthForms() {
@@ -194,7 +194,9 @@ function AuthForms() {
                 <div className="relative">
                   <User
                     className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200 ${
-                      formData.name.length > 0 ? "text-blue-500" : "text-gray-400"
+                      formData.name.length > 0
+                        ? "text-blue-500"
+                        : "text-gray-400"
                     }`}
                   />
                   <input
@@ -221,7 +223,9 @@ function AuthForms() {
                 <div className="relative">
                   <CalendarDays
                     className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200 ${
-                      formData.dob.length > 0 ? "text-blue-500" : "text-gray-400"
+                      formData.dob.length > 0
+                        ? "text-blue-500"
+                        : "text-gray-400"
                     }`}
                   />
                   <input
@@ -276,7 +280,9 @@ function AuthForms() {
             <div className="relative">
               <Lock
                 className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-200 ${
-                  formData.password.length > 0 ? "text-blue-500" : "text-gray-400"
+                  formData.password.length > 0
+                    ? "text-blue-500"
+                    : "text-gray-400"
                 }`}
               />
               <input
@@ -313,7 +319,6 @@ function AuthForms() {
               onClick={toggleMode}
               className="flex items-center justify-center flex-3 px-3 sm:px-4 py-2 sm:py-3 border-2 border-amber-500 rounded-lg sm:rounded-xl text-md sm:text-md font-semibold text-gray-700 hover:bg-white hover:border-amber-400 transition-all"
             >
-              
               {isLogin ? "Signup" : "Login"}
             </button>
 
@@ -325,8 +330,8 @@ function AuthForms() {
               {isSubmitting
                 ? "Please wait..."
                 : isLogin
-                ? "Sign In"
-                : "Create Account"}
+                  ? "Sign In"
+                  : "Create Account"}
             </button>
           </div>
         </form>

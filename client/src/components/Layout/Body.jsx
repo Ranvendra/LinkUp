@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import NavBar from "./NavBar";
+import NavBar from "../NavBar/NavBar";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import api from "../services/api";
-import { addUser } from "../store/userSlice";
+import api from "../../services/api";
+import { addUser } from "../../store/userSlice";
 
 const Body = () => {
   const dispatch = useDispatch();

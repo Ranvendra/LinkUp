@@ -1,4 +1,10 @@
-import { Search, UserMinus, MessageCircle } from "lucide-react";
+import {
+  Search,
+  UserMinus,
+  MessageCircle,
+  UserPlus,
+  MessageSquareText,
+} from "lucide-react";
 import LazyImage from "../Shared/LazyImage";
 
 const ConnectionList = ({

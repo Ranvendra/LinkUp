@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { MessageCircle, Rss, Users, Search } from "lucide-react";
 
+// eslint-disable-next-line no-unused-vars
 const MobileNavLink = ({ to, icon: Icon, label, isActive }) => (
   <Link
     to={to}

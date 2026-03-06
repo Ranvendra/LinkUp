@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useDispatch, useSelector } from "react-redux";
 import { addFeed } from "../../store/feedSlice";
-import { ImagePlus, Send, MessageCircle, Heart, X, Trash2 } from "lucide-react";
+import { Sparkles, TicketX, HeartPlus } from "lucide-react";
 import Toast from "../Shared/Toast";
 import LazyImage from "../Shared/LazyImage";
 
@@ -76,8 +76,6 @@ const Feed = () => {
       </div>
     );
   }
-
-  const currentUser = feed[0];
 
   return (
     <div className="animate-fadeIn flex flex-col h-[calc(100vh-100px)]">

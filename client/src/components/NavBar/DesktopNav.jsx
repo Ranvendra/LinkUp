@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { MessageCircle, Rss, Users, Search } from "lucide-react";
 
+// eslint-disable-next-line no-unused-vars
 const NavLink = ({ to, icon: Icon, label, isActive }) => (
   <Link
     to={to}

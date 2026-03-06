@@ -225,3 +225,57 @@ const populatedMessage = await newMessage.populate(
 // We broadcast the message to both participants with the full avatar included!
 io.to(chatId).emit("messageReceived", populatedMessage);
 ```
+
+---
+
+## 7. The "Blank Feed After Login" Bug (Routing & Missing Icons)
+
+### What was happening?
+
+After you signed in successfully, instead of seeing the Feed as your automatic homepage, you either stayed on the login screen (if you refreshed), or you were redirected to a completely blank white screen!
+
+### Why did this happen?
+
+There were two separate issues combining to break the experience:
+**1. Missing Icon Imports:** In your `Feed.jsx` file, you used special icons (`<Sparkles />`, `<TicketX />`, `<HeartPlus />`) to draw the cards. However, you forgot to `import` those specific icons at the top of the file! When React tried to load the Feed page, it crashed completely because it didn't know what those shape words meant, resulting in a blank white screen.
+**2. Routing Confusion:** In `App.jsx`, React Router was given `<Route path="/" />` twice. One for the Login page, and one for the logged-in layout. Because the Login page was the exact match, visiting the root website URL always showed the Login page even if you were already logged in.
+
+### How we fixed it:
+
+1. We fixed the `App.jsx` routing so that the main layout wrapping the app isn't forced strictly onto `path="/"`, allowing its child routes (like `/feed`) to resolve smoothly.
+2. We imported the missing `lucide-react` icons into `Feed.jsx` so it no longer crashes.
+3. We added an automatic redirect to `FrontPage.jsx`. Now, if you visit the root website and your browser remembers you are logged in, it will instantly teleport you to the `/feed` page instead of asking you to log in again!
+
+**Code Changed (`client/src/components/Feed/Feed.jsx`):**
+
+```javascript
+// Old Code (Missing Imports)
+import { ImagePlus, Send, MessageCircle... } from "lucide-react";
+
+// New Code (Correct Imports)
+import { Sparkles, TicketX, HeartPlus } from "lucide-react";
+```
+
+**Code Changed (`client/src/App.jsx` & `client/src/components/FirstPage/FrontPage.jsx`):**
+
+```javascript
+// Inside App.jsx
+// Old Routing (Conflicting Root Paths)
+<Route path="/" element={<FrontPage />} />
+<Route path="/" element={<Body />}>
+  <Route path="feed" element={<Feed />} />
+
+// New Routing (Clearer Layout Route)
+<Route path="/" element={<FrontPage />} />
+<Route element={<Body />}>
+  <Route path="/feed" element={<Feed />} />
+```
+
+```javascript
+// Inside FrontPage.jsx (Added Auto-Redirect)
+useEffect(() => {
+  if (localStorage.getItem("token")) {
+    navigate("/feed"); // Teleport logged in users straight to feed!
+  }
+}, [navigate]);
+```

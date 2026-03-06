@@ -26,12 +26,12 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<FrontPage />} />
-          <Route path="/" element={<Body />}>
-            <Route path="feed" element={<Feed />} />
-            <Route path="search" element={<Search />} />
-            <Route path="chat" element={<Chat />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="connections" element={<Connections />} />
+          <Route element={<Body />}>
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/connections" element={<Connections />} />
           </Route>
         </Routes>
       </BrowserRouter>

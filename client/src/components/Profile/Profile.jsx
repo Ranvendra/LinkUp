@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import { addUser } from "../../store/userSlice";
 import { CheckCircle2 } from "lucide-react";
@@ -13,7 +12,6 @@ import DangerZone from "./DangerZone";
 const Profile = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [formData, setFormData] = useState({

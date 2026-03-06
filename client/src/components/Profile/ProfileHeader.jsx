@@ -1,7 +1,6 @@
 import { Lock, Edit2, Save } from "lucide-react";
 
 const ProfileHeader = ({
-  user,
   isEditing,
   setIsEditing,
   handleSave,

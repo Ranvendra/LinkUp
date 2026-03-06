@@ -3,7 +3,6 @@ import { Eye, EyeOff, Mail, User, Lock, CalendarDays } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
 import Toast from "../Shared/Toast";
-import google from "/google.webp";
 
 function AuthForms() {
   const navigate = useNavigate();

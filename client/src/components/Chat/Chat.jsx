@@ -239,7 +239,7 @@ const Chat = () => {
 
   return (
     <div className="h-[calc(100vh-120px)] max-h-[850px] w-full max-w-7xl mx-auto flex animate-fadeIn p-4 md:p-4 lg:p-6 items-center justify-center">
-      <div className="bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex w-full h-[90vh] max-h-[900px] overflow-hidden">
+      <div className="bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-gray-100 flex w-full h-full max-h-[900px] overflow-hidden">
         <ChatSidebar
           chats={chats}
           activeChat={activeChat}
@@ -252,7 +252,7 @@ const Chat = () => {
         />
 
         {activeChat ? (
-          <div className="flex-1 flex flex-col bg-white">
+          <div className="flex-1 flex flex-col bg-white min-h-0 h-full">
             <ChatWindow
               activeChat={activeChat}
               getOtherParticipant={getOtherParticipant}

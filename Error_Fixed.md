@@ -279,3 +279,67 @@ useEffect(() => {
   }
 }, [navigate]);
 ```
+
+---
+
+## 8. The Chat Scrolling Bug (Flex Container Overflow)
+
+### What was happening?
+
+On the Chat page, the left sidebar containing the list of conversations and the right window containing the messages would not scroll properly. Instead of showing a scrollbar inside the defined boxes, the entire list just kept expanding off the bottom of the screen!
+
+### Why did this happen?
+
+In modern web design using CSS Flexbox, if a container is told to expand using `flex-1`, it usually grows to fit its content by default. If the content is larger than the screen, but the element isn't strictly bounded, the overflow scrollbar never appears. In Tailwind/CSS, you have to explicitly add `min-height: 0` (or `min-h-0`) to the flex container so the browser knows, "Stop expanding and just show a scrollbar!"
+
+### How we fixed it:
+
+We added `min-h-0` to the scrolling areas on both the left side (chat list) and the right side (messages window) so they won't expand beyond the screen and will allow proper inner scrolling. We also fixed the outer container in `Chat.jsx` to perfectly respect its parent's bounds with `h-full`.
+
+**Code Changed (`client/src/components/Chat/Chat.jsx`, `ChatSidebar.jsx`, `ChatWindow.jsx`):**
+
+```javascript
+// Old Code (Missing bounds)
+<div className="flex-1 flex flex-col bg-white">
+<div className="flex-1 overflow-y-auto...">
+
+// New Code (Added min-h-0 everywhere needed)
+<div className="flex-1 flex flex-col bg-white min-h-0 h-full">
+<div className="flex-1 min-h-0 overflow-y-auto...">
+```
+
+---
+
+## 9. The Infinite Redirect & App Freeze Bug (Stale Token)
+
+### What was happening?
+
+If you left your frontend open for a long time and then refreshed the page, the entire application would lag heavily and your browser tab would completely freeze up!
+
+### Why did this happen?
+
+There was an **infinite redirect loop**. When the app sat idle for a long time, the server might go to sleep or your login token would expire. When you refreshed the page, the frontend (`Body.jsx`) tried to fetch your profile information, but the request failed. In response to the failure, the frontend properly kicked you back to the home screen (`navigate("/")`).
+
+However, the frontend **forgot to delete the expired token** from your browser's memory (`localStorage`). When you landed on the home screen (`FrontPage.jsx`), it saw the old token still sitting there and instantly said, "Oh, you're logged in! Go to the Feed!" It redirected you to the Feed, the Feed tried to fetch your profile, failed again, kicked you back, the home screen saw the old token again, kicked you forward... This happened endlessly and repetitively, crashing the browser!
+
+### How we fixed it:
+
+We updated `Body.jsx` so that when the API fails to fetch user data, we **completely wipe the invalid token from `localStorage`** before sending you to the home page. Now, the redirect works perfectly and peacefully without looping.
+
+**Code Changed (`client/src/components/Layout/Body.jsx`):**
+
+```javascript
+// Old Code
+} catch (err) {
+  console.error("Fetch user failed", err);
+  navigate("/");
+}
+
+// New Code
+} catch (err) {
+  console.error("Fetch user failed", err);
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  navigate("/");
+}
+```

@@ -10,7 +10,7 @@ const ChatWindow = ({
   setActiveChat,
 }) => {
   return (
-    <div className="flex-1 flex flex-col bg-white">
+    <div className="flex-1 flex flex-col bg-white min-h-0">
       {/* Header */}
       <div className="px-8 mt-5 pt-3 pb-3 mb-2 flex items-center justify-between bg-white z-10 shrink-0">
         <div className="flex items-center gap-4 w-full">
@@ -48,7 +48,7 @@ const ChatWindow = ({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto px-4 md:px-8 space-y-5 bg-white custom-scrollbar pb-6 relative">
+      <div className="flex-1 min-h-0 overflow-y-auto px-4 md:px-8 space-y-5 bg-white custom-scrollbar pb-6 relative">
         {messages.map((msg, idx) => {
           const isMe = msg.sender?._id === user._id;
           const senderName =

@@ -18,6 +18,8 @@ const Body = () => {
       dispatch(addUser(res.data));
     } catch (err) {
       console.error("Fetch user failed", err);
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
       navigate("/");
     }
   };
